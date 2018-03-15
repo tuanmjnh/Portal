@@ -1,0 +1,347 @@
+﻿@{
+    ViewBag.Title = "Báo cáo";
+    ViewBag.ContentTitle = "Báo cáo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="">
+        <div class="selector-month mb10">
+            <span class="btn btn-primary"><i class="fa fa-hand-pointer-o" aria-hidden="true"></i> Chọn tháng</span>
+            <div class="list-file col-md-2">
+                <ul class="list-group">
+                    @foreach (var dir in ViewBag.directory)
+                    {
+                        <li class="list-group-item">
+                            <a href="#time@(dir)" class="GetMaDonVi">
+                                <i class="glyphicon glyphicon-chevron-right pl10"></i> @Portal.Controllers.BaseController.getMonthYear(dir)
+                            </a>
+                            <ul style="display:none">
+                                @foreach (var local in (List<Portal.Models.local>)ViewBag.local)
+                                {
+                                    <li>
+                                        <a href="#time@(dir)-local@(local.id)" class="GetCBT">@local.title</a>
+                                        <ul></ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Báo cáo theo đơn vị - mã cán bộ thu</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12 row" style="padding-right:0">
+                    <div class="list-file">
+                        <table id="table-cbt" class="table table-hover table-bordered table-head table-responsive table-tr-link">
+                            <thead>
+                                <tr>
+                                    <th>NVQL</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Cố định</th>
+                                    <th class="hidden">SL cố định</th>
+                                    <th>GPhone</th>
+                                    <th class="hidden">SL Gphone</th>
+                                    <th>MegaVNN</th>
+                                    <th class="hidden">SL MegaVNN</th>
+                                    <th>FiberVNN</th>
+                                    <th class="hidden">SL FiberVNN</th>
+                                    <th>T.Cố định</th>
+                                    <th class="hidden">SL T.Cố định</th>
+                                    <th>T.NET</th>
+                                    <th class="hidden">SL T.NET</th>
+                                    <th>T.Di động</th>
+                                    <th class="hidden">SL T.Di động</th>
+                                    <th>T.MyTV</th>
+                                    <th class="hidden">SL T.MyTV</th>
+                                    <th>Tổng cộng</th>
+                                    <th class="hidden">SL Tổng cộng</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <span id="ExportTotal" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Xuất Báo cáo tổng</span>
+                <span id="ExportTotalMerginNVQL" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Xuất Báo cáo gộp NVQL</span>
+                <span id="ExportCBTNull" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Danh sách cán bộ thu còn thiếu</span>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="CustomerCBTModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></span>
+                        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                    </div>
+                    <div class="modal-body list-file">
+                        <table id="CustomerCBTTable" class="table table-hover table-bordered table-head table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Mã thanh toán</th>
+                                    <th>Account</th>
+                                    <th>Tên TB</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Thuế</th>
+                                    <th>Tổng</th>
+                                    <th>Tổng cộng</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <span id="export-excel" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Xuất báo cáo</span>
+                        <span type="button" class="btn btn-default" data-dismiss="modal">Quay lại</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input id="time" type="hidden" value="" />
+    <input id="local" type="hidden" value="" />
+    <div id="tblMergin" style="display:none"></div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        AjaxLoad();
+        $(function () {
+            //console.log('2,857,000 (4)'.replace(/ \([^)]*\)/gi, ''))
+            //console.log('1.591.000'.replace(/,/g, '').replace(/\./g, ''))
+        })
+        $(document).on('click', '.GetMaDonVi', function (e) {
+            var ul = $(this).next();
+            //$('.list-group ul').each(function () {
+            //    if (ul != $(this))
+            //        console.log($(this).offset())
+            //        //$(this).css('display', 'none')
+            //})
+            if (ul.css('display') == 'none')
+                ul.slideDown();
+            else
+                ul.slideUp();
+        });
+        local_cbt = "";
+        $(document).on('click', '.GetCBT', function (e) {
+            e.preventDefault();
+            local_cbt = $(this).html();
+            var data = $(this).attr('href');
+            var data_tmp = data.split('-');
+            $('#time').val(data_tmp[0].replace('#time',''));
+            $('#local').val(data_tmp[1].replace('local',''));
+            $.get('@Url.Action("GetCBT")', { data: data }, function (d) {
+                if (d.data) {
+                    var html = '';
+                    for (var i = 0; i < d.data.length; i++) {
+                        var totalPrice = (parseInt(d.data[i][18].replace(/,/g, '').replace(/\./g, '')) +
+                                    parseInt(d.data[i][16].replace(/,/g, '').replace(/\./g, '')) +
+                                    parseInt(d.data[i][14].replace(/,/g, '').replace(/\./g, '')) +
+                                    parseInt(d.data[i][8].replace(/,/g, '').replace(/\./g, ''))).format();
+                        var totalQty = parseInt(d.data[i][19]) + parseInt(d.data[i][17]) + parseInt(d.data[i][15]) + parseInt(d.data[i][9]);
+                        html += '<tr data-id="' + d.data[i][0] + '" data-time="' + data + '" data-toggle="modal" data-target="#CustomerCBTModal">' +
+                            '<td>' + d.data[i][2] + '</td>' +
+                            '<td>' + d.data[i][3] + '</td>' +
+                            //
+                            '<td>' + d.data[i][4] + ' (' + d.data[i][5] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][5] + '</td>' +
+                            '<td>' + d.data[i][6] + ' (' + d.data[i][7] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][7] + '</td>' +
+                            '<td>' + d.data[i][10] + ' (' + d.data[i][11] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][11] + '</td>' +
+                            '<td>' + d.data[i][12] + ' (' + d.data[i][13] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][13] + '</td>' +
+                            '<td>' + d.data[i][8] + ' (' + d.data[i][9] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][9] + '</td>' +
+                            '<td>' + d.data[i][14] + ' (' + d.data[i][15] + ')</td>' +
+                            '<td class="hidden"d>' + d.data[i][15] + '</td>' +
+                            '<td>' + d.data[i][16] + ' (' + d.data[i][17] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][17] + '</td>' +
+                            '<td>' + d.data[i][18] + ' (' + d.data[i][19] + ')</td>' +
+                            '<td class="hidden">' + d.data[i][19] + '</td>' +
+                            '<td>' + totalPrice + ' (' + totalQty + ')</td>' +
+                            '<td class="hidden">' + totalQty + '</td>' +
+                            '</tr>';
+                    }
+                    $('#table-cbt tbody').html(html);
+                }
+                if (d.danger)
+                    $('#TMAlert').TMAlert({ type: "error", message: d.danger });
+                //if (a.success)
+                //    $('#TMAlert').TMAlert({ message: a.success });
+                //else
+                //    $('#TMAlert').TMAlert({ type: "error", message: a.danger });
+            });
+        });
+        $('#CustomerCBTModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            var nvql = button.children('td');
+            modal.find('.modal-title').text(nvql.html() + " - " + nvql.next().html())
+            modal.find('.modal-body input').val(recipient)
+
+            $.get('@Url.Action("GetCustomerCBT")', {
+                dataid: button.attr('data-id'),
+                datatime: button.attr('data-time')
+            }, function (d) {
+                if (d.data) {
+                    var html = '';
+                    for (var i = 0; i < d.data.length; i++) {
+                        html += '<tr data-id="' + d.data[i][0].Value + '" data-toggle="modal" data-target="#myModal">' +
+                            '<td>' + d.data[i][1].Value + '</td>' +
+                            '<td>' + d.data[i][3].Value + d.data[i][4].Value + d.data[i][5].Value + d.data[i][6].Value + '</td>' +
+                            '<td>' + d.data[i][7].Value + '</td>' +
+                            '<td>' + d.data[i][8].Value + '</td>' +
+                            '<td>' + parseInt(d.data[i][17].Value).format() + '</td>' +
+                            '<td>' + parseInt(d.data[i][16].Value).format() + '</td>' +
+                            '<td>' + parseInt(d.data[i][18].Value).format() + '</td>' +
+                            '</tr>';
+                    }
+                    $('#CustomerCBTTable tbody').html(html);
+                }
+                if (d.danger)
+                    $('#TMAlert').TMAlert({ type: "error", message: d.danger });
+                //if (a.success)
+                //    $('#TMAlert').TMAlert({ message: a.success });
+                //else
+                //    $('#TMAlert').TMAlert({ type: "error", message: a.danger });
+            });
+        })
+
+        $('#export-excel').on('click', function () {
+            var htmls = $(document).find('#myModalLabel').html();
+            htmls += $(document).find('#CustomerCBTModal .modal-body').html();
+            exportToExcel(htmls, $(document).find('#myModalLabel').html())
+        });
+
+        $('#ExportTotal').on('click', function (e) {
+            e.preventDefault();
+            //window.location = window.location.href.replace(window.location.search, '').replace(window.location.hash, '') + "/ExportTotal?datatime=" + window.location.hash.substr(1);
+            var htmls = '<div>Báo cáo ' + local_cbt + " - " + window.location.hash.replace('#time', '') + '</div>';
+            htmls += $('#table-cbt').html().replace(/ \([^)]*\)/gi, '');
+            exportToExcel(htmls, "Báo cáo " + local_cbt + " - " + window.location.hash.replace('#time', ''))
+        })
+
+        //$('#ExportTotalMerginNVQL').on('click', function (e) {
+        //    e.preventDefault();
+        //    window.location = window.location.href.replace(window.location.search, '').replace(window.location.hash, '') + "/ExportCBTNull?datatime=" + window.location.hash.substr(1);
+        //});
+        $('#ExportTotalMerginNVQL').on('click', function (e) {
+            e.preventDefault();
+            var htmls = '<div>Báo cáo gộp NVQL ' + local_cbt + " - " + window.location.hash.replace('#time', '') + '</div>';
+            var table = '<table>' + $('#table-cbt').html().replace(/ \([^)]*\)/gi, '').replace(/,/gi, '').replace(/\./gi, '') + '</table>';
+            var listObj = [];
+            $(table).find('tbody tr').each(function () {
+                var idObj = $(this).children().eq(0).html();
+                var item = {
+                    nvql: $(this).children().eq(0).html(),
+                    cd: parseInt($(this).children().eq(2).html()),
+                    slcd: parseInt($(this).children().eq(3).html()),
+                    GPhone: parseInt($(this).children().eq(4).html()),
+                    slGPhone: parseInt($(this).children().eq(5).html()),
+                    MegaVNN: parseInt($(this).children().eq(6).html()),
+                    slMegaVNN: parseInt($(this).children().eq(7).html()),
+                    FiberVNN: parseInt($(this).children().eq(8).html()),
+                    slFiberVNN: parseInt($(this).children().eq(9).html()),
+                    tcd: parseInt($(this).children().eq(10).html()),
+                    sltcd: parseInt($(this).children().eq(11).html()),
+                    tnet: parseInt($(this).children().eq(12).html()),
+                    sltnet: parseInt($(this).children().eq(13).html()),
+                    tdd: parseInt($(this).children().eq(14).html()),
+                    sltdd: parseInt($(this).children().eq(15).html()),
+                    tmytv: parseInt($(this).children().eq(16).html()),
+                    sltmytv: parseInt($(this).children().eq(17).html()),
+                    tc: parseInt($(this).children().eq(18).html()),
+                    sltc: parseInt($(this).children().eq(19).html()),
+                };
+                if (listObj[idObj] === undefined)
+                    listObj[idObj] = item;
+                else {
+                    listObj[idObj].cd = listObj[idObj].cd + item.cd,
+                    listObj[idObj].slcd = listObj[idObj].slcd + item.slcd,
+                    listObj[idObj].GPhone = listObj[idObj].GPhone + item.GPhone,
+                    listObj[idObj].slGPhone = listObj[idObj].slGPhone + item.slGPhone,
+                    listObj[idObj].MegaVNN = listObj[idObj].MegaVNN + item.MegaVNN,
+                    listObj[idObj].slMegaVNN = listObj[idObj].slMegaVNN + item.slMegaVNN,
+                    listObj[idObj].FiberVNN = listObj[idObj].FiberVNN + item.FiberVNN,
+                    listObj[idObj].slFiberVNN = listObj[idObj].slFiberVNN + item.slFiberVNN,
+                    listObj[idObj].tcd = listObj[idObj].tcd + item.tcd,
+                    listObj[idObj].sltcd = listObj[idObj].sltcd + item.sltcd,
+                    listObj[idObj].tnet = listObj[idObj].tnet + item.tnet,
+                    listObj[idObj].sltnet = listObj[idObj].sltnet + item.sltnet,
+                    listObj[idObj].tdd = listObj[idObj].tdd + item.tdd,
+                    listObj[idObj].sltdd = listObj[idObj].sltdd + item.sltdd,
+                    listObj[idObj].tmytv = listObj[idObj].tmytv + item.tmytv,
+                    listObj[idObj].sltmytv = listObj[idObj].sltmytv + item.sltmytv,
+                    listObj[idObj].tc = listObj[idObj].tc + item.tc,
+                    listObj[idObj].sltc = listObj[idObj].sltc + item.sltc
+                    }
+            })
+            htmls += '<table><thead>' + $('#table-cbt thead').html().replace('<th>Địa chỉ</th>', '').replace('class="hidden"', '') + '</thead><tbody>';
+            for (var k in listObj) {
+                htmls += '<tr>'
+                    + '<td>' + listObj[k].nvql + '</td>'
+                    + '<td>' + listObj[k].cd.format() + '</td>'
+                    + '<td>' + listObj[k].slcd.format() + '</td>'
+                    + '<td>' + listObj[k].GPhone.format() + '</td>'
+                    + '<td>' + listObj[k].slGPhone.format() + '</td>'
+                    + '<td>' + listObj[k].MegaVNN.format() + '</td>'
+                    + '<td>' + listObj[k].slMegaVNN.format() + '</td>'
+                    + '<td>' + listObj[k].FiberVNN.format() + '</td>'
+                    + '<td>' + listObj[k].slFiberVNN.format() + '</td>'
+                    + '<td>' + listObj[k].tcd.format() + '</td>'
+                    + '<td>' + listObj[k].sltcd.format() + '</td>'
+                    + '<td>' + listObj[k].tnet.format() + '</td>'
+                    + '<td>' + listObj[k].sltnet.format() + '</td>'
+                    + '<td>' + listObj[k].tdd.format() + '</td>'
+                    + '<td>' + listObj[k].sltdd.format() + '</td>'
+                    + '<td>' + listObj[k].tmytv.format() + '</td>'
+                    + '<td>' + listObj[k].sltmytv.format() + '</td>'
+                    + '<td>' + listObj[k].tc.format() + '</td>'
+                    + '<td>' + listObj[k].sltc.format() + '</td>'
+                    + '</tr>';
+            }
+            htmls += '</tbody></table>';
+            $('#tblMergin').html(htmls);
+            exportToExcel($('#tblMergin').html(), "Báo cáo gộp NVQL" + local_cbt + " - " + window.location.hash.replace('#time', ''))
+        })
+
+        $('#ExportCBTNull').on('click', function (e) {
+            e.preventDefault();
+            window.location = window.location.href.replace(window.location.search, '').replace(window.location.hash, '') + "/ExportCBTNull?datatime=" + window.location.hash.substr(1);
+        })
+        //$(document).on('click', '#table-cbt tbody tr', function () {
+
+        //});
+        @*$(document).on('click', '.GetMaDonVi', function (e) {
+            e.preventDefault();
+            var $this = $(this);
+            $.get('@Url.Action("GetMaDonVi")', { uid: $(this).attr('href').replace('#', '') }, function (d) {
+                if (d.data) {
+                    var html = '';
+                    for (var i = 0; i < d.data.length; i++) {
+                        html += '<li><a href="#local' + d.data[i].id + '">' + d.data[i].title + '</a></li>';
+                        console.log(d.data[i]);
+                    }
+                    $this.find('ul').html(html);
+                }
+                //if (a.success)
+                //    $('#TMAlert').TMAlert({ message: a.success });
+                //else
+                //    $('#TMAlert').TMAlert({ type: "error", message: a.danger });
+            })
+        })*@
+    </script>
+}

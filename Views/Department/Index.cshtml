@@ -1,0 +1,114 @@
+﻿@model PagedList.IPagedList<Portal.Models.group>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Quản lý phòng ban";
+    ViewBag.ContentTitle = "Danh sách phòng ban";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p class="pull-left">
+    <button onclick="window.location='@Url.Action("Create")'" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> @TM.Common.Language.addnew</button>
+</p>
+<div class="pull-right mb10 form-inline">
+    @Html.Partial("search")
+    <div class="pull-right">
+        <a href="@Url.Action("Index",new { export = "export"})" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+        @if (ViewBag.flag == 0)
+        {
+            <a href="javascript:;" class="btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"><i class="glyphicon glyphicon-refresh"></i></a>
+            if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+            {
+                <a href="javascript:;" class="glyphicon glyphicon-remove btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"></a>
+            }
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+        else
+        {
+            <a href="javascript:;" class="btn btn-danger btn-flag btn-chk" data-toggle="tooltip" title="Xóa tất cả" style="display:none"><i class="glyphicon glyphicon-trash"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+    </div>
+</div>
+<div class="clearfix"></div>
+@if (Model == null || Model.Count() < 1)
+{
+    <div class="alert alert-warning" role="alert">@TM.Common.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    <th class="tbl-index">STT</th>
+                    <th>
+                        @Html.ActionLink("Tên phòng ban", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Mã phòng ban", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "key_asc" ? "key_desc" : "key_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Mã ID", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "level_asc" ? "level_desc" : "level_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th class="tbl-checkbox">
+                        <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int index = 0;}
+                @foreach (var item in Model)
+                {
+                    index += 1;
+                    <tr id="@item.id">
+                        <td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.id)">@Html.DisplayFor(model => item.title)</a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.id_key)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => item.level)
+                        </td>
+                        <td class="tbl-checkbox">
+                            <label><input type="checkbox" name="checkbox" value="@Html.DisplayFor(model => item.id)" class="chkitem" /></label>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag
+                         }))
+    </div>
+                    }
+@section ScriptList { @Html.Partial("ScriptList")}

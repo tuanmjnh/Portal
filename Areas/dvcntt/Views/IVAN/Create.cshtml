@@ -1,0 +1,172 @@
+﻿@model Portal.Models.item
+
+@{
+    ViewBag.Title = "Quản lý IVAN - BHXH";
+    ViewBag.ContentTitle = "Thêm mới IVAN - BHXH";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "IVAN", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nhập thông tin</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="url">Đơn vị</label>
+                        <div class="col-md-9">
+                            <select name="url" class="form-control">
+                                @foreach (var item in (List<Portal.Models.local>)ViewBag.local)
+                                {
+                                    <option @(Model != null && Model.url == item.id.ToString() ? "selected" : "") value="@item.id">@item.title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="id_key">Loại dịch vụ</label>
+                        <div class="col-md-9">
+                            <select name="id_key" class="form-control">
+                                @foreach (var item in (List<Portal.Models.group>)ViewBag.services)
+                                {
+                                    <option @(Model != null && Model.id_key == item.id.ToString() ? "selected" : "") value="@item.id">@item.title - @item.level Tháng @(item.extras == "1" ? "(Thiết bị)" : "")</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="code_key">Mã số thuế</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-unlock"></i></span>
+                                <input class="form-control text-box single-line" id="code_key" name="code_key" type="text" value="@Html.DisplayFor(m=>m.code_key)"
+                                       data-val="true" data-val-required="Vui lòng nhập mã số thuế">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="code_key" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="authorUser">Tài khoản</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                                <input class="form-control text-box single-line" id="authorUser" name="authorUser" type="text" value="@(Model!=null?Model.author.Trim(',').Split(',')[0]:"")"
+                                       data-val="true" data-val-required="Vui lòng nhập tài khoản">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="authorUser" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="authorPass">Mật khẩu</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                                <input class="form-control text-box single-line" id="authorPass" name="authorPass" type="text" value="@(Model!=null?Model.author.Trim(',').Split(',')[1]:"bk123456")"
+                                       data-val="true" data-val-required="Vui lòng nhập mật khẩu">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="authorPass" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="title">Tên khách hàng</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                                <input class="form-control text-box single-line" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)"
+                                       data-val="true" data-val-required="Vui lòng nhập tên khách hàng">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="images">Địa chỉ</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-address-book-o"></i></span>
+                                <input class="form-control text-box single-line" id="images" name="images" type="text" value="@Html.DisplayFor(m=>m.images)"
+                                       data-val="true" data-val-required="Vui lòng nhập địa chỉ">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="images" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="extras">Nhân viên đăng ký</label>
+                        <div class="col-md-9">
+                            <select name="extras" class="form-control">
+                                @foreach (var item in (List<Portal.Models.user>)ViewBag.users)
+                                {
+                                    <option @(Model != null && Model.extras == item.id.ToString() ? "selected" : "") value="@item.id">@item.full_name - @item.username</option>
+                                }
+                            </select>
+                            @*<div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <input class="form-control text-box single-line" id="extras" name="extras" type="text" value="@Html.DisplayFor(m=>m.extras)"
+                                           data-val="true" data-val-required="Vui lòng nhập nhân viên">
+                                </div>*@
+                            <span class="field-validation-valid text-danger" data-valmsg-for="extras" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="quantity">Trạng thái tạo</label>
+                        <div class="col-md-9">
+                            <select name="quantity" class="form-control">
+                                <option @(Model != null && Model.quantity == 0 ? "selected" : "") value="0">Tạo mới</option>
+                                <option @(Model != null && Model.quantity == 1 ? "selected" : "") value="1">Gia hạn</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="upload">Đính kèm hóa đơn</label>
+                        <div class="col-md-9">
+                            <label for="upload" class="btn btn-success"><span class="glyphicon glyphicon-paperclip"></span></label>
+                            <input type="file" name="upload" id="upload" class="hidden" multiple />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="upload" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="desc" name="desc" class="tinymce">@(Model != null ? Html.Raw(Model.desc) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model != null ? (Model.flag == 1 ? "checked" : "") : "checked") /> @TM.Common.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model != null && Model.flag == 0 ? "checked" : "") /> @TM.Common.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.addnew" class="btn btn-primary" />
+                    <a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm { @Html.Partial("ScriptForm")}

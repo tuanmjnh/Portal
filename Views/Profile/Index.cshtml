@@ -1,0 +1,136 @@
+﻿@model Portal.Models.user
+@{
+    ViewBag.Title = "Cập nhật thông tin";
+    ViewBag.ContentTitle = "Cập nhật thông tin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal support-input">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="id" name="id" value="@Authentication.Auth.AuthUser.id.ToString()" />
+
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Cập nhật hồ sơ</h3>
+                </div>
+                <div class="panel-body label-center">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="full_name">Họ tên</label>
+                        <div class="col-md-9 asterisk">
+                            <input type="text" id="full_name" name="full_name" class="form-control" value="@Html.DisplayFor(model => model.full_name)"
+                                   data-val="true" data-val-required="Vui lòng nhập đầy đủ họ tên" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="full_name" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="mobile">Số điện thoại</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="mobile" name="mobile" type="number"
+                                   value="@Html.DisplayFor(model => model.mobile)" data-val="true" data-val-number="Điện thoại phải là số">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="mobile" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="email">Email</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="email" name="email" type="email"
+                                   value="@Html.DisplayFor(model => model.email)" data-val="true" data-val-email="Sai định dạng Email">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="email" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label setting-label col-md-3" for="address">Địa chỉ</label>
+                        <div class="col-md-9">
+                            <textarea id="address" name="address" class="form-control tinymce">@(Model != null ? Html.Raw(Model.address) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-body">
+                        <div class="form-group option-label">
+                            <label class="col-md-4">Người lập</label>
+                            <label class="col-md-8">@Portal.Controllers.BaseController.GetUser(Model.created_by)</label>
+                        </div>
+                        <div class="form-group option-label">
+                            <label class="col-md-4">Ngày lập</label>
+                            <label class="col-md-8">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                        </div>
+                        <div class="form-group option-label">
+                            <label class="col-md-4">Người sửa</label>
+                            <label class="col-md-8">@Portal.Controllers.BaseController.GetUser(Model.updated_by)</label>
+                        </div>
+                        <div class="form-group option-label">
+                            <label class="col-md-4">Ngày sửa</label>
+                            <label class="col-md-8">@(Model.updated_at.HasValue ? Model.updated_at.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                        </div>
+                        <div class="form-group option-label">
+                            <label class="col-md-4">Đăng nhập cuối</label>
+                            <label class="col-md-8">@(Model.last_login.HasValue ? Model.last_login.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                        </div>
+                        <div class="form-group option-label">
+                            <label class="col-md-4" for="roles">Loại tài khoản</label>
+
+                            @if (Model.roles == Authentication.Roles.superadmin)
+                            {
+                                <label class="label label-danger">Supper Admin</label>
+                            }
+                            else if (Model.roles == Authentication.Roles.admin)
+                            {
+                                <label class="label label-danger">Admin</label>
+                            }
+                            else if (Model.roles == Authentication.Roles.mod)
+                            {
+                                <label class="label label-info">Mod</label>
+                            }
+                            else if (Model.roles == Authentication.Roles.director)
+                            {
+                                <label class="label label-primary">Giám đốc</label>
+                            }
+                            else if (Model.roles == Authentication.Roles.leader)
+                            {
+                                <label class="label label-success">Trưởng phòng</label>
+                            }
+                            else if (Model.roles == Authentication.Roles.staff)
+                            {
+                                <label class="label label-warning">Nhân viên</label>
+                            }
+                            else if (Model.roles == Authentication.Roles.managerBill)
+                            {
+                                <label class="label label-warning">Cước</label>
+                            }
+                            else
+                            {
+                                <label class="label label-danger">Không xác định</label>
+                            }
+                        </div>
+                        <div class="form-group option-label">
+                            <label class="col-md-4" for="flag">Trạng thái</label>
+                            <label class="label label-success">@(Model.flag == 0 ? "Khóa" : "Sử dụng")</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.update" class="btn btn-primary" />
+                    @Html.ActionLink(TM.Common.Language.backlink, "../", null, new { @class = "btn btn-info" })
+                    @*@Html.ActionLink(TM.Common.Language.backlink, "Index", null, new { @class = "btn btn-info" })*@
+                    @*<input type="submit" value="@TM.Common.Language.update" class="btn btn-default" />*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm { @Html.Partial("ScriptForm")}

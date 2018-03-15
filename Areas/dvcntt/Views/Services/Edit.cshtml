@@ -1,0 +1,271 @@
+﻿@model Portal.Models.group
+
+@{
+    ViewBag.Title = "Quản lý địa bàn";
+    ViewBag.ContentTitle = "Cập nhật địa bàn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.id)
+    <div class="form-horizontal support-input">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Cập nhật thông tin</h3>
+                </div>
+                <div class="panel-body">
+                    @if (Model.app_key == @Portal.Common.Objects.groups.token)
+                {
+                        <div id="@Portal.Common.Objects.groups.token">
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="title">Tên gói</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên gói">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="level">Tháng</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="level" name="level" type="number" value="@Html.DisplayFor(m=>m.level)"
+                                           data-val="true" data-val-required="Vui lòng nhập số tháng" data-val-number="Số tháng phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="level" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parent_id">Phí dịch vụ</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parent_id" name="parent_id" type="number" value="@Html.DisplayFor(m=>m.parent_id)"
+                                           data-val="true" data-val-required="Vui lòng nhập giá tiền" data-val-number="Phí dich vụ phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parent_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parents_id">Phí thiết bị</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parents_id" name="parents_id" type="number" value="@Html.DisplayFor(m=>m.parents_id)"
+                                           data-val="true" data-val-required="Vui lòng nhập phí thiết bị Token" data-val-number="Phí thiết bị phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parents_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.app_key == @Portal.Common.Objects.groups.ca)
+                    {
+                        <div id="@Portal.Common.Objects.groups.ca">
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="title">Tên gói</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên gói">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="level">Tháng</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="level" name="level" type="number" value="@Html.DisplayFor(m=>m.level)"
+                                           data-val="true" data-val-required="Vui lòng nhập số tháng" data-val-number="Số tháng phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="level" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parent_id">Phí dịch vụ</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parent_id" name="parent_id" type="number" value="@Html.DisplayFor(m=>m.parent_id)"
+                                           data-val="true" data-val-required="Vui lòng nhập giá tiền" data-val-number="Phí dich vụ phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parent_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parents_id">Phí thiết bị</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parents_id" name="parents_id" type="number" value="@Html.DisplayFor(m=>m.parents_id)"
+                                           data-val="true" data-val-required="Vui lòng nhập phí thiết bị Token" data-val-number="Phí thiết bị phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parents_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.app_key == @Portal.Common.Objects.groups.ivan)
+                    {
+                        <div id="@Portal.Common.Objects.groups.ivan">
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="title">Tên gói</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên gói">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="level">Tháng</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="level" name="level" type="number" value="@Html.DisplayFor(m=>m.level)"
+                                           data-val="true" data-val-required="Vui lòng nhập số tháng" data-val-number="Số tháng phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="level" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parent_id">Phí dịch vụ</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parent_id" name="parent_id" type="number" value="@Html.DisplayFor(m=>m.parent_id)"
+                                           data-val="true" data-val-required="Vui lòng nhập giá tiền" data-val-number="Phí dich vụ phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parent_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parents_id">Phí thiết bị</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parents_id" name="parents_id" type="number" value="@(Model!=null?Model.parents_id:" 0")"
+                                           data-val="true" data-val-required="Vui lòng nhập phí thiết bị Token" data-val-number="Phí thiết bị phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parents_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label setting-label col-md-3" for="parents_id">Tích hợp CA</label>
+                                <div class="col-md-9">
+                                    <label><input type="radio" name="extras" value="1" @(Model.extras == "1" ? "checked" : "") /> @TM.Common.Language.use</label>
+                                    <label><input type="radio" name="extras" value="0" @(Model.extras == "0" ? "checked" : "") /> @TM.Common.Language.noUse</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.app_key == @Portal.Common.Objects.groups.ktr)
+                    {
+                        <div id="@Portal.Common.Objects.groups.ktr">
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="title">Tên dịch vụ</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên dịch vụ">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="level">Tốc độ đường truyền</label>
+                                <div class="col-md-3 asterisk">
+                                    <div class="input-group">
+                                        <input class="form-control text-box single-line" id="level" name="level" type="number" value="@Html.DisplayFor(m=>m.level)"
+                                               data-val="true" data-val-required="Vui lòng nhập tốc độ đường truyền" data-val-number="Tốc độ đường truyền phải là số">
+                                        <span class="input-group-addon">Mb&nbsp;</span>
+                                    </div>
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="level" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parent_id">Phí dịch vụ</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parent_id" name="parent_id" type="number" value="@(Model!=null? Model.parent_id:" 0")"
+                                           data-val="true" data-val-required="Vui lòng nhập giá tiền" data-val-number="Phí dich vụ phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parent_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                            <div class="form-group required">
+                                <label class="control-label setting-label col-md-3" for="parents_id">Phí thiết bị</label>
+                                <div class="col-md-9 asterisk">
+                                    <input class="form-control text-box single-line" id="parents_id" name="parents_id" type="number" value="@(Model!=null?Model.parents_id:" 0")"
+                                           data-val="true" data-val-required="Vui lòng nhập phí thiết bị Token" data-val-number="Phí thiết bị phải là số">
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="parents_id" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="desc" name="desc" class="tinymce">@(Model != null ? Html.Raw(Model.desc) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.created_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.updated_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updated_at.HasValue ? Model.updated_at.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model.flag == 1 ? "checked" : "" ) /> @TM.Common.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model.flag == 0 ? "checked" : "" ) /> @TM.Common.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.update" class="btn btn-primary" />
+                    <a href="javascript:;" onclick="window.history.go(-1)" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        //getChecked({ val: $('.tichhopCA [name="extras"]:checked').val(), token: '.token' })
+        //$('.tichhopCA [name="extras"]').change(function () {
+        //    getChecked({ val: $(this).val(), token: '.token' })
+        //});
+        //function getChecked(obj) {
+        //    if (obj.val == 0) $(obj.token).hide();
+        //    else $(obj.token).show();
+        //};
+        ////
+        //var selected = $('#parents_id option:selected');
+        //getPrice({
+        //    selected: selected,
+        //    dataPrice: parseFloat(selected.attr('data-price')),
+        //    OriginPrice: '#OriginPrice',
+        //    VatPrice: '#PriceParentsId'
+        //});
+        //$('#parents_id').change(function () {
+        //    selected = $('#parents_id option:selected');
+        //    getPrice({
+        //        selected: selected,
+        //        dataPrice: parseFloat(selected.attr('data-price')),
+        //        OriginPrice: '#OriginPrice',
+        //        VatPrice: '#PriceParentsId'
+        //    });
+        //    console.log(selected.attr('data-price'));
+        //});
+        ////
+        //function getPrice(obj) {
+        //    $(obj.OriginPrice).html(obj.dataPrice.format());
+        //    $(obj.VatPrice).html((obj.dataPrice * 1.1).format());
+        //}
+    </script>
+}

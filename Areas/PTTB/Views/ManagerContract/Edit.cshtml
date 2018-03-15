@@ -1,0 +1,384 @@
+﻿@model Portal.Models.ManagerHD
+@{
+    ViewBag.Title = "Quản lý hợp đồng";
+    ViewBag.ContentTitle = "Cập nhật hợp đồng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("Edit", "ManagerHD", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <input type="hidden" name="id" value="@Html.DisplayFor(m => m.id)" />
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nhập thông tin</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="url">Đơn vị</label>
+                        <div class="col-md-9">
+                            <select name="url" class="form-control" @(Authentication.Auth.AuthUser.roles == Authentication.Roles.admin || Authentication.Auth.AuthUser.roles == Authentication.Roles.superadmin ? "" : "disabled")>
+                                @foreach (var item in (List<Portal.Models.group>)ViewBag.local)
+                                {
+                                    <option @(item.level == Model.localID ? "selected" : "") value="@item.id">@item.title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="contractID">Mã hợp đồng</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-file-code-o"></i></span>
+                                <input class="form-control text-box single-line" id="contractID" name="contractID" type="text" value="@Html.DisplayFor(m => m.contractID)"
+                                       data-val="true" data-val-required="Vui lòng nhập mã hợp đồng" disabled>
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="contractID" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    @{
+                        var accView = "";
+                        if (!string.IsNullOrEmpty(Model.accounts))
+                        {
+                            var acc = Model.accounts.Trim(',').Split(',');
+                            foreach (var i in acc)
+                            {
+                                accView += $"{i}, ";
+                            }
+                            accView = accView.Substring(0, accView.Length - 2);
+                        }
+                    }
+
+                    @if (Authentication.Auth.AuthUser.roles == Authentication.Roles.admin)
+                    {
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="customerName">Tên khách hàng</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                                    <input class="form-control text-box single-line" id="customerName" name="customerName" type="text" value="@Html.DisplayFor(m => m.customerName)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên khách hàng">
+                                </div>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="customerName" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="customerAddress">Địa chỉ</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-address-book"></i></span>
+                                    <input class="form-control text-box single-line" id="customerAddress" name="customerAddress" type="text" value="@Html.DisplayFor(m => m.customerAddress)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên khách hàng">
+                                </div>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="customerAddress" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="customerPhone">Điện thoại</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                    <input class="form-control text-box single-line" id="customerPhone" name="customerPhone" type="text" value="@Html.DisplayFor(m => m.customerPhone)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="accounts">Accounts</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-columns"></i></span>
+                                    <input class="form-control text-box single-line" id="accounts" name="accounts" type="text" value="@accView">
+                                    <span class="input-group-addon accountNumber">@(Html.DisplayFor(m => m.accountNumber))</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="customerName">Tên khách hàng</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                                    <input class="form-control text-box single-line" id="customerName" name="customerName" type="text" value="@Html.DisplayFor(m => m.customerName)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên khách hàng" disabled>
+                                </div>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="customerName" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="customerAddress">Địa chỉ</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-address-book"></i></span>
+                                    <input class="form-control text-box single-line" id="customerAddress" name="customerAddress" type="text" value="@Html.DisplayFor(m => m.customerAddress)"
+                                           data-val="true" data-val-required="Vui lòng nhập tên khách hàng" disabled>
+                                </div>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="customerAddress" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="customerPhone">Điện thoại</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                    <input class="form-control text-box single-line" id="customerPhone" name="customerPhone" type="text" value="@Html.DisplayFor(m => m.customerPhone)" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="accounts">Accounts</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-columns"></i></span>
+                                    <input class="form-control text-box single-line" id="accounts" name="accounts" type="text" value="@accView" disabled>
+                                    <span class="input-group-addon accountNumber">@(Html.DisplayFor(m => m.accountNumber))</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="upload">Bản mềm hiện tại</label>
+                        <div class="col-md-9">
+                            <a target="_blank" href="@TM.Url.BaseUrl/@Model.attach"><i class="fa fa-file-pdf-o" aria-hidden="true" style="font-size:28px"></i></a>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thông tin mới</h3>
+                </div>
+                @if (Authentication.Auth.AuthUser.roles == Authentication.Roles.admin)
+                {
+                    <div class="panel-body">
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="details">Ghi chú</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-sticky-note-o"></i></span>
+                                    <textarea class="form-control text-box single-line" rows="5" id="details" name="details" type="text" value="@Html.DisplayFor(m=>m.details)"></textarea>
+                                </div>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="details" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="upload">Bản mềm mới</label>
+                            <div class="col-md-9">
+                                <div class="form-group col-md-12 asterisk">
+                                    <label for="FileUpload" class="btn btn-warning btnUpload">
+                                        Chọn File
+                                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" data-val="true" data-rule-extension="dbf" data-msg-extension="Định dạng tệp phải là dbf." />
+                                    </label>
+                                    <div class="clearfix"></div>
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                                </div>
+                                <div class="form-group col-md-12 lblUpload"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="panel-body">
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="details">Ghi chú</label>
+                            <div class="col-md-9 asterisk">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-sticky-note-o"></i></span>
+                                    <textarea class="form-control text-box single-line" rows="5" id="details" name="details" type="text" value="@Html.DisplayFor(m=>m.details)"
+                                              data-val="true" data-val-required="Vui lòng nhập ghi chú"></textarea>
+                                </div>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="details" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label setting-label col-md-3" for="upload">Bản mềm mới</label>
+                            <div class="col-md-9">
+                                <div class="form-group col-md-12 asterisk">
+                                    <label for="FileUpload" class="btn btn-warning btnUpload">
+                                        Chọn File
+                                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" data-val="true"
+                                               data-val-required="Vui lòng chọn file" data-rule-extension="dbf" data-msg-extension="Định dạng tệp phải là dbf." />
+                                    </label>
+                                    <div class="clearfix"></div>
+                                    <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                                </div>
+                                <div class="form-group col-md-12 lblUpload"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người tạo</label>
+                        <label class="col-md-9">@Html.DisplayFor(m => m.createdBy)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày tạo</label>
+                        <label class="col-md-9">@(Model.createdAt.HasValue ? Model.createdAt.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                </div>
+                <div class="panel-footer">
+                    <span class="btn btn-primary btnAction" data-url="@Url.Action("Edit")">@TM.Common.Language.update</span>
+                    <a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Biến động thay đổi</h3>
+                </div>
+                <div class="panel-body">
+                    @if (((List<Portal.Models.ManagerHD>)ViewBag.listOld).Count > 0)
+                    {
+                        <table class="table table-bordered table-responsive table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Ghi chú Y/C</th>
+                                    <th>Ghi chú duyệt</th>
+                                    <th>Người gửi Y/C</th>
+                                    <th>Ngày gửi Y/C</th>
+                                    <th>Người duyệt</th>
+                                    <th>Ngày duyệt</th>
+                                    <th class="col-md-1">TT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in (List<Portal.Models.ManagerHD>)ViewBag.listOld)
+                                {
+                                    <tr>
+                                        <td>@item.details</td>
+                                        <td>@item.cfmNotes</td>
+                                        <td>@item.updatedBy</td>
+                                        <td>@(item.updatedAt.HasValue ? item.updatedAt.Value.ToString("dd/MM/yyyy hh:mm") : "")</td>
+                                        <td>@item.cfmBy</td>
+                                        <td>@(item.cfmAt.HasValue ? item.cfmAt.Value.ToString("dd/MM/yyyy hh:mm") : "")</td>
+                                        <td>
+                                            @if (item.flag == 3)
+                                            {
+                                                <i class="fa fa-check-square-o text-success" aria-hidden="true" title="Đã thực hiện"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa fa-times-circle-o text-danger" aria-hidden="true" title="Không thực hiện"></i>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="label label-warning">Chưa có lịch sử biến động!</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        AjaxLoad();
+        $('#FileUpload').on('change', function () {
+            var files = this.files;
+            var html = '';
+            var ext = '.pdf';
+            var check = true;
+            for (var i = 0; i < files.length; i++) {
+                html += '<span class="text-primary">' + (i + 1) + '. ' + files[i].name + '</span><br/>';
+                if (ext != extension(files[i].name))
+                    check = false;
+            }
+            if (check)
+                $('.lblUpload').html(html);
+            else
+                $('.lblUpload').html('<label class="text-danger">Định dạnh tệp phải là .pdf</label>');
+        });
+        function extension(filename) {
+            return '.' + filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        }
+        function ActionLink(obj) {
+            obj.e.preventDefault();
+            var formdata = new FormData($('form')[0]);
+            for (var i in obj.data)
+                formdata.append(i, obj.data[i]);
+            //obj.data = $.extend({}, { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() }, obj.data);
+            $.ajax({
+                url: obj.url,
+                type: 'POST',
+                dataType: 'json',
+                data: formdata,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (d) {
+                    if (d.success){
+                        $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                        $('[name="details"]').val('');
+                    }
+                    if (d.danger)
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                    $('#FileUpload').val('');
+                    $('.lblUpload').html('');
+                },
+                error: function (xhr, error, status) {
+                    $('#TMAlert').TMAlert({ type: "danger", message: window.location.protocol + '//' + window.location.host + this.url + ' is ' + xhr.status + ' ' + xhr.statusText });
+                    //console.log(error, status);
+                }
+            });
+        };
+        $('.btnAction').on('click', function (e) {
+            if ($('form').valid()){
+            ActionLink({
+                e: e,
+                url: $(this).attr('data-url'),
+                data: { time: $('#time').val(), ckhMerginMonth: $('#ckhMerginMonth').prop('checked') }
+                });
+            }
+        });
+        //KA/17/09/05/011
+        @*function setDefault() {
+            $('#customerName').val('');
+            $('#customerAddress').val('');
+        }
+        $('#contractID').on('blur', function () {
+            if ($('#contractID').val() != '') {
+                $.get('@Url.Action("getDataHD")', 'so_hd=' + $(this).val(), function (d) {
+                    console.log(d);
+                    $('#btnSubmit').hide();
+                    if (d.data != null) {
+                        $('#customerName').val(d.data[13].Value);
+                        $('#customerAddress').val(d.data[7].Value);
+                        $('#btnSubmit').show();
+                    } else if (d.danger) {
+                        setDefault();
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger, fixed: false });
+                    } else if (d.data == null) {
+                        setDefault();
+                        $('#TMAlert').TMAlert({ type: "danger", message: 'Không tìm thấy hợp đồng', fixed: false });
+                    }
+                })
+            } else {
+                setDefault();
+            }*@
+        //});
+    </script>
+}

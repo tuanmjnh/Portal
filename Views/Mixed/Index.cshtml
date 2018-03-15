@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewBag.Title = "Chuyển tiền số thành tiền chữ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Chuyển tiền số thành tiền chữ</h3>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <textarea class="input" placeholder="Nhập tiền số" cols="100" rows="5"></textarea>
+            <div class="output"></div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Get Mobile From Text</h3>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <div class="col-md-6">
+                <textarea id="InputGetNumber" class="form-control" placeholder="Nhập giá trị" rows="10"></textarea>
+            </div>
+            <div class="col-md-6">
+                <div id="OutputGetNumber" style="border:1px solid #ccc;overflow-y:scroll;max-height:200px;min-height:200px"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <button id="SubmitGetNumber">Get Mobile Number</button>
+    </div>
+</div>
+<form id="HDDTForm" method="post" action="@Url.Action("ConvertExcelToDbf")" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Converter Excel To DBF</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" multiple data-val="true"
+                               data-val-required="Vui lòng chọn file" data-rule-extension=".xls" data-msg-extension="Định dạng tệp phải là dbf." />
+                        <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="submit" class="btn btn-success" value="Xử lý" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form id="HDDTForm" method="post" action="@Url.Action("GetOffset")" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Get Offset Excel</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Bước nhảy</label>
+                    <div class="col-md-8">
+                        <input type="number" name="offset" class="form-control" value="10" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Số lượng lấy</label>
+                    <div class="col-md-8">
+                        <input type="number" name="number" class="form-control" value="10" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" multiple data-val="true"
+                               data-val-required="Vui lòng chọn file" data-rule-extension=".xls" data-msg-extension="Định dạng tệp phải là dbf." />
+                        <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="submit" class="btn btn-success" value="Xử lý" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form id="HDDTForm" method="post" action="@Url.Action("AnhThaiMeo")" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Anh Thái Mèo</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" multiple data-val="true"
+                               data-val-required="Vui lòng chọn file" data-rule-extension=".xls" data-msg-extension="Định dạng tệp phải là dbf." />
+                        <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <input type="submit" class="btn btn-success" value="Xử lý" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Tools</h3>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <a href="@Url.Action("TXTToExcel")">Chuyển TXT sang Excel</a>
+        </div>
+        <div class="form-group">
+            <a href="@Url.Action("CheckAddress")">Kiểm tra address</a>
+        </div>
+    </div>
+</div>
+@section ScriptForm{
+    @Html.Partial("ScriptForm")
+    <script>
+        //
+        var reg10 = /\d{10}/g;
+        var reg11 = /\d{11}/g;
+        function getNumber(reg, str) {
+            return reg.exec(str);
+        }
+        $('#SubmitGetNumber').on('click', function () {
+            var input = $('#InputGetNumber').val().split('\n');
+            var html = '';
+            for (var i = 0; i < input.length; i++) {
+                var tmp = input[i].replace(/\./g, '').replace(/\,/g, '');
+                console.log(tmp);
+                var str = /\d{11}/g.exec(tmp);//getNumber(reg11, input[i]);
+                if (str == null)
+                    str = /\d{10}/g.exec(tmp)//getNumber(reg10, input[i]);
+                html += '<div>' + str + '</div>';
+            }
+            $('#OutputGetNumber').html(html);
+        })
+        //
+        String.prototype.capitalize = function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
+        function conver(number) {
+            var arrMoney = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+            var hdv1 = [" ", " mươi ", " trăm ", " nghìn ", " mươi ", " trăm ", " triệu ", " tỉ "];
+            var hdv = [" ", " mươi ", " trăm ", " nghìn ", " triệu ", " tỉ "];
+            number = number.replace(/\./g, '').replace(/\,/g, '');
+            var rs = '';
+            var j = 0;
+            var k = 0;
+            for (var i = number.length - 1; i >= 0; i--) {
+                var tmp = '';
+                if (j > 0 && j % 3 == 0) {
+                    tmp = hdv[k + 3];
+                    k++;
+                }
+                rs = arrMoney[number[i]] + hdv[j % 3] + tmp + rs;
+
+                j++;
+            }
+            rs = rs.replace(/một mươi không/g, 'mười');
+            rs = rs.replace(/một mươi/g, 'mười');
+            rs = rs.replace(/không trăm không mươi không/g, '');
+            rs = rs.replace(/không mươi không/g, '');
+            rs = rs.replace(/mươi không/g, 'mươi');
+            rs = rs.replace(/không mươi/g, 'linh');
+            rs = rs.replace(/  /g, ' ');
+            rs = (rs.trim() + 'đồng').capitalize();
+            return rs;
+        }
+        $('.input').on('keyup', function () {
+            var input = $(this).val();
+            $('.output').html('<i>' + conver(input) + '</i>');
+        })
+    </script>
+}

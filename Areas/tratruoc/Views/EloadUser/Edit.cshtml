@@ -1,0 +1,144 @@
+﻿@model Portal.Areas.tratruoc.Models.eloadUser
+
+@{
+    ViewBag.Title = "Quản lý tài khoản ELoad";
+    ViewBag.ContentTitle = "Thêm mới tài khoản ELoad";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.id)
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nhập thông tin</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="users">Tài khoản</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input class="form-control text-box single-line" id="users" name="users" type="text" value="@Html.DisplayFor(m=>m.users)"
+                                       data-val="true" data-val-required="Vui lòng nhập tài khoản">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="users" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="fullName">Tên đầy đủ</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                <input class="form-control text-box single-line" id="fullName" name="fullName" type="text" value="@(Html.DisplayFor(m=>m.fullName))"
+                                       data-val="true" data-val-required="Vui lòng nhập mật khẩu">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="fullName" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="startedAt">Ngày bắt đầu</label>
+                        <div class="col-md-9">
+                            <div class="input-group date datetimepicker">
+                                <input type="text" class="form-control" id="startedAt" name="startedAt" autocomplete="off" value="@(Model!=null&&Model.startedAt.HasValue?Model.startedAt.Value.ToString("dd/MM/yyyy"):"")" />
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="endedAt">Ngày kết thúc</label>
+                        <div class="col-md-9">
+                            <div class="input-group date datetimepicker end_at">
+                                <input type="text" class="form-control" id="endedAt" name="endedAt" autocomplete="off" value="@(Model!=null&&Model.endedAt.HasValue?Model.endedAt.Value.ToString("dd/MM/yyyy"):"")"/>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="localID">Đơn vị</label>
+                        <div class="col-md-9">
+                            <select name="localID" class="form-control">
+                                @foreach (var item in (List<Portal.Models.local>)ViewBag.local)
+                                {
+                                    <option @(Model != null && Model.localID == item.id ? "selected" : "") value="@item.id">@item.title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="desc" name="desc" class="tinymce">@(Model != null ? Html.Raw(Model.desc) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.createdBy)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.createdAt.HasValue ? Model.createdAt.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.updatedBy)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updatedAt.HasValue ? Model.updatedAt.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-4" for="isLock">Trạng thái Khóa</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="isLock" value="0" @(Model != null ? (Model.isLock == 0 ? "checked" : "") : "checked") /> @TM.Common.Language.notLock</label>
+                            <label><input type="radio" name="isLock" value="1" @(Model != null && Model.isLock == 1 ? "checked" : "") /> @TM.Common.Language.locked</label>
+                        </div>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-4" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model != null ? (Model.flag == 1 ? "checked" : "") : "checked") /> @TM.Common.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model != null && Model.flag == 0 ? "checked" : "") /> @TM.Common.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.update" class="btn btn-primary" />
+                    <a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        $('.datetimepicker').datetimepicker({
+            defaultDate: new Date(),
+            format: 'DD/MM/YYYY',
+        });
+    </script>
+}
