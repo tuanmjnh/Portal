@@ -16,7 +16,7 @@
         @if (ViewBag.flag == 0)
         {
             <a href="javascript:;" class="btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"><i class="glyphicon glyphicon-refresh"></i></a>
-            if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+            if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
             {
                 <a href="javascript:;" class="glyphicon glyphicon-remove btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"></a>
             }
@@ -45,30 +45,39 @@ else
                     <th class="tbl-index">STT</th>
                     <th>
                         @Html.ActionLink("Tên phòng ban", "Index",
-                   new
-                   {
-                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
-                       currentFilter = ViewBag.currentFilter,
-                       flag = ViewBag.flag,
-                   })
+                            new
+                            {
+                                order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                                currentFilter = ViewBag.currentFilter,
+                                flag = ViewBag.flag,
+                            })
                     </th>
                     <th>
                         @Html.ActionLink("Mã phòng ban", "Index",
-                   new
-                   {
-                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "key_asc" ? "key_desc" : "key_asc",
-                       currentFilter = ViewBag.currentFilter,
-                       flag = ViewBag.flag,
-                   })
+                            new
+                            {
+                                order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "key_asc" ? "key_desc" : "key_asc",
+                                currentFilter = ViewBag.currentFilter,
+                                flag = ViewBag.flag,
+                            })
                     </th>
                     <th>
                         @Html.ActionLink("Mã ID", "Index",
-                   new
-                   {
-                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "level_asc" ? "level_desc" : "level_asc",
-                       currentFilter = ViewBag.currentFilter,
-                       flag = ViewBag.flag,
-                   })
+                            new
+                            {
+                                order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "level_asc" ? "level_desc" : "level_asc",
+                                currentFilter = ViewBag.currentFilter,
+                                flag = ViewBag.flag,
+                            })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Order", "Index",
+                            new
+                            {
+                                order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "level_asc" ? "level_desc" : "level_asc",
+                                currentFilter = ViewBag.currentFilter,
+                                flag = ViewBag.flag,
+                            })
                     </th>
                     <th class="tbl-checkbox">
                         <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
@@ -91,6 +100,9 @@ else
                         <td>
                             @Html.DisplayFor(model => item.level)
                         </td>
+                        <td>
+                            @Html.DisplayFor(model => item.orders)
+                        </td>
                         <td class="tbl-checkbox">
                             <label><input type="checkbox" name="checkbox" value="@Html.DisplayFor(model => item.id)" class="chkitem" /></label>
                         </td>
@@ -102,13 +114,13 @@ else
     <div class="pagination-list">
         Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
         @Html.PagedListPager(Model, page => Url.Action("Index",
-                         new
-                         {
-                             page,
-                             order = ViewBag.order,
-                             currentFilter = ViewBag.currentFilter,
-                             flag = ViewBag.flag
-                         }))
+                                             new
+                                             {
+                                                 page,
+                                                 order = ViewBag.order,
+                                                 currentFilter = ViewBag.currentFilter,
+                                                 flag = ViewBag.flag
+                                             }))
     </div>
-                    }
+}
 @section ScriptList { @Html.Partial("ScriptList")}

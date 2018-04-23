@@ -5,7 +5,7 @@
 }
 
 <h2>F-Secure</h2>
-@if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+@if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
 {
     <div class="col-md-12">
         <a href="@Url.Action("Export")" class="btn btn-info"><i class="fa fa-download" aria-hidden="true"></i> Export F-Secure List</a>

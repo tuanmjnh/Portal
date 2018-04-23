@@ -1,0 +1,305 @@
+﻿@{
+    ViewBag.Title = "Cập nhật thông tin thuê bao ND49";
+    ViewBag.ContentTitle = "Danh sách thuê bao ND49";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var disabled = "";
+    if (Authentication.Auth.AuthUser.roles == Authentication.Roles.staff || Authentication.Auth.AuthUser.roles == Authentication.Roles.leader)
+    {
+        disabled = "disabled";
+    }
+}
+<div id="toolbar">
+    <div class="form-group">
+        <div class="col-md-3 row" style="margin-right:5px">
+            <select class="madvi form-control mb5" @disabled>
+                @if (Authentication.Auth.AuthUser.roles == Authentication.Roles.admin || Authentication.Auth.AuthUser.roles == Authentication.Roles.director || Authentication.Auth.AuthUser.roles == Authentication.Roles.manager)
+                {
+                    <option value="0">-- Tất cả đơn vị --</option>
+                }
+                @foreach (var i in ViewBag.group)
+                {
+                    <option value="@i.level" @(ViewBag.localID == i.level ? "selected" : "")>@i.title</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-3 row">
+            <select id="flag" class="form-control ExportType">
+                <option value="1">Danh sách chưa hoàn thiện</option>
+                <option value="2">Danh sách đã hoàn thiện</option>
+                <option value="-1">Toàn bộ</option>
+            </select>
+        </div>
+        <span class="btn btn-success btnExport mb5 pull-right" style="margin-left:5px;padding:7px 12px">Kết xuất dữ liệu</span>
+        <div class="input-group date endDateCustom end_at col-md-2 pull-right" style="margin-left:5px">
+            <input type="text" class="form-control" id="ended_at" name="ended_at" autocomplete="off" placeholder="Nhập ngày kết thúc" data-toggle="tooltip" data-placement="bottom" title="Nhập ngày kết thúc" value="" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        <div class="input-group date startDateCustom col-md-2 pull-right">
+            <input type="text" class="form-control" id="started_at" name="started_at" autocomplete="off" placeholder="Nhập ngày bắt đầu" data-toggle="tooltip" data-placement="bottom" title="Nhập ngày bắt đầu" value="" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+    </div>
+</div>
+<table class="table table-hover table-bordered table-responsive" id="table"
+       data-toolbar="#toolbar"
+       data-click-to-select="false"
+       data-search="true"
+       data-show-refresh="true"
+       data-show-toggle="true"
+       data-show-columns="true"
+       data-show-export="false"
+       data-detail-view="false"
+       data-detail-formatter="detailFormatter"
+       data-minimum-count-columns="2"
+       data-show-pagination-switch="true"
+       data-pagination="true"
+       data-id-field="id"
+       data-page-list="[10, 25, 50, 100, 200, 500]"
+       data-show-footer="false"
+       data-side-pagination="server"
+       data-response-handler="responseHandler"
+       data-query-params="queryParams"
+       data-url="@Url.Action("Select","DSThueBao",new { area = "ND49" })"
+       data-url-create="Insert"
+       data-url-edit="Update">
+    <thead>
+        <tr>
+            <th data-events="chkEvents" data-field="state" data-checkbox="true" data-valign="middle">#</th>
+            <th data-field="STB" data-sortable="true" data-editable="true" data-valign="middle" class="">Số thuê bao</th>
+            <th data-field="SO_ANH" data-sortable="true" data-editable="true" data-valign="middle">Số ảnh</th>
+            <th data-field="TB_TD3THANG" data-sortable="true" data-editable="true" data-valign="middle">TB 3 tháng</th>
+            <th data-field="BTS" data-sortable="true" data-editable="true" data-valign="middle">BTS</th>
+            <th data-field="DVIQL" data-sortable="true" data-editable="true" data-valign="middle">DVIQL</th>
+            <th data-field="NVQL" data-sortable="true" data-editable="true" data-valign="middle">NVQL</th>
+            <th data-events="cmdEvents" data-formatter="viewBillFomatter" data-align="center" data-valign="middle" data-width="50">#</th>
+        </tr>
+    </thead>
+</table>
+
+<!-- Modal -->
+<div class="modal" id="ModalExport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Yêu cầu xác nhận!</h4>
+            </div>
+            <div class="modal-body"> Bạn có chắc chắn muốn thực hiện? </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Đồng ý</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Hủy bỏ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="ModalConfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Yêu cầu xác nhận!</h4>
+            </div>
+            <div class="modal-body"> Bạn có chắc chắn muốn thực hiện? </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Đồng ý</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Hủy bỏ</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ExportTable"></div>
+@section ScriptList {
+    @Html.Partial("ScriptList")
+    <script src="~/Plugin/bootstrap-table/bootstrap-table.js"></script>
+    <script src="~/Plugin/bootstrap-table/extensions/export/bootstrap-table-export.js"></script>
+    <script src="~/Plugin/bootstrap-table/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/PartialList.js"></script>
+    <script>
+        AjaxLoad();
+        var token = { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() };
+        //Datetime
+        var dateNow = new Date();
+        $('.startDateCustom').datetimepicker({
+            defaultDate: new Date(dateNow.getFullYear(), dateNow.getMonth(), 1),
+            format: 'DD/MM/YYYY HH:mm',
+        });
+        $('.endDateCustom').datetimepicker({
+            defaultDate: dateNow,
+            format: 'DD/MM/YYYY HH:mm',
+        });
+        //
+        function viewBillFomatter(value, row, index) {
+            if (row.FLAG == 2) {
+                //console.log(row.UPDATEDBY + ' - ' + moment(row.UPDATEDAT).format('DD/MM/YYYY hh:mm'));
+                return '<span class="badge badge-success" role="button" data-toggle="tooltip" data-placement="left" title="' + row.UPDATEDBY + ' - ' + moment(row.UPDATEDAT).format('DD/MM/YYYY hh:mm')+'" style="background-color:#3c763d"><i class="fa fa-check" aria-hidden="true"></i></span>';
+            }
+             else
+                return '<span class="badge badge-success btnConfirm" role="button"><i class="fa fa-check" aria-hidden="true"></i></span>';
+        };
+        $(document).ajaxComplete(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        function ActionLink(obj) {
+            obj.e.preventDefault();
+            var formdata = new FormData($('form')[0]);
+            for (var i in obj.data)
+                formdata.append(i, obj.data[i]);
+            $.ajax({
+                url: obj.url,
+                type: 'POST',
+                dataType: 'json',
+                data: formdata,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (d) {
+                    if (d.success) {
+                        $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                        $("form")[0].reset();
+                    }
+                    if (d.danger)
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                    if (d.warning)
+                        $('#TMAlert').TMAlert({ type: "warning", message: d.warning });
+                    if (d.url)
+                        window.location = d.url;
+                },
+                error: function (xhr, error, status) {
+                    $('#TMAlert').TMAlert({ type: "danger", message: window.location.protocol + '//' + window.location.host + this.url + ' is ' + xhr.status + ' ' + xhr.statusText });
+                    //console.log(error, status);
+                }
+            });
+        };
+        function queryParams(params) {
+            //var params = {};
+            //$('#toolbar').find('input[name]').each(function () {
+            //    params[$(this).attr('name')] = $(this).val();
+            //});
+            params.maDvi = $('#toolbar').find('select.madvi').val();
+            params.flag = $('#flag').val();
+            return params;
+        };
+        var selectedRow = {};
+        //Events bootstrapTable
+        window.cmdEvents = {
+            'click .btnConfirm': function (e, value, row, index) {
+                $('#ModalConfirm').modal('show');
+                selectedRow.target = $(e.currentTarget);
+                selectedRow.dataId = row.ID;
+                console.log(selectedRow);
+            }
+        };
+
+        $('#ModalConfirm').find('.btn.btn-primary').on('click', function () {
+            if (selectedRow.dataId !== '') {
+                $.post('@Url.Action("AcceptData")', $.extend({}, token, { dataId: selectedRow.dataId }), function (d) {
+                    if (d.success) {
+                        $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                        selectedRow.target.css('background-color', '#3c763d');
+                    }
+                    if (d.danger)
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                    if (d.warning)
+                        $('#TMAlert').TMAlert({ type: "warning", message: d.warning });
+                    if (d.url)
+                        window.location = d.url;
+                });
+            } else
+                $('#TMAlert').TMAlert({ type: "danger", message: "Lỗi xử lý vui lòng thực hiện lại!" });
+        });
+        function createExport(data) {
+            var html = '<tr>\
+                            <th>MA_DVI</th>\
+                            <th>TEN_DVI</th>\
+                            <th>STB</th>\
+                            <th>SO_ANH</th>\
+                            <th>TD_TKC</th>\
+                            <th>TB_TD3THANG</th>\
+                            <th>BTS</th>\
+                            <th>NVQL</th>\
+                            <th>TEN_NVQL</th>\
+                            <th>NGUOI_TAO</th>\
+                            <th>NGAY_TAO</th>\
+                            <th>NGUOI_CAP_NHAT</th>\
+                            <th>NGAY_CAP_NHAT</th>\
+                        </tr>';
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    html += '<tr>\
+                                    <td>'+ data[i].MA_DVI + '</td>\
+                                    <td>'+ data[i].TEN_DVI + '</td>\
+                                    <td>'+ data[i].STB + '</td>\
+                                    <td>'+ data[i].SO_ANH + '</td>\
+                                    <td>'+ data[i].TD_TKC + '</td>\
+                                    <td>'+ data[i].TB_TD3THANG + '</td>\
+                                    <td>'+ data[i].BTS + '</td>\
+                                    <td>'+ data[i].NVQL + '</td>\
+                                    <td>'+ data[i].TEN_NVQL + '</td>\
+                                    <td>'+ data[i].CREATEDBY + '</td>\
+                                    <td>'+ moment(data[i].CREATEDAT).format('DD/MM/YYYY HH:mm') + '</td>\
+                                    <td>'+ data[i].UPDATEDBY + '</td>\
+                                    <td>'+ moment(data[i].UPDATEDAT).format('DD/MM/YYYY HH:mm') + '</td>\
+                                </tr>';
+                }
+            }
+            return html;
+        };
+        $('.btnExport').on('click', function () {
+            var exportType = $('.ExportType').val();
+            $.get('@Url.Action("Select")', { export: exportType, startDate: $('#started_at').val(), endDate: $('#ended_at').val(), maDvi: $('.madvi').val() }, function (d) {
+                var exportData = [
+                    {
+                        MA_DVI: 'MA_DVI',
+                        TEN_DVI: 'TEN_DVI',
+                        STB: 'STB',
+                        SO_ANH: 'SO_ANH',
+                        TD_TKC: 'TD_TKC',
+                        TB_TD3THANG: 'TB_TD3THANG',
+                        BTS: 'BTS',
+                        NVQL: 'NVQL',
+                        DVIQL: 'DVIQL',
+                        TEN_NVQL: 'TEN_NVQL',
+                        NGUOI_TAO: 'NGUOI_TAO',
+                        NGAY_TAO: 'NGAY_TAO',
+                        NGUOI_CAP_NHAT: 'NGUOI_CAP_NHAT',
+                        NGAY_CAP_NHAT: 'NGAY_CAP_NHAT'
+                    }
+                ];
+                if (d.data) {
+                    for (var i = 0; i < d.data.length; i++) {
+                        exportData.push(
+                            {
+                                MA_DVI: d.data[i].MA_DVI,
+                                TEN_DVI: d.data[i].TEN_DVI,
+                                STB: d.data[i].STB,
+                                SO_ANH: d.data[i].SO_ANH,
+                                TD_TKC: d.data[i].TD_TKC,
+                                TB_TD3THANG: d.data[i].TB_TD3THANG,
+                                BTS: d.data[i].BTS,
+                                NVQL: d.data[i].NVQL,
+                                DVIQL: d.data[i].DVIQL,
+                                TEN_NVQL: checkJsonData(d.data[i].TEN_NVQL),
+                                NGUOI_TAO: d.data[i].CREATEDBY,
+                                NGAY_TAO: checkJsonData(moment(d.data[i].CREATEDAT).format('DD/MM/YYYY HH:mm')),
+                                NGUOI_CAP_NHAT: checkJsonData(d.data[i].UPDATEDBY),
+                                NGAY_CAP_NHAT: checkJsonData(moment(d.data[i].UPDATEDAT).format('DD/MM/YYYY HH:mm'))
+                            }
+                        )
+                    }
+                    //JSONToCSVConvertor(exportData, 'dstbnd49_');
+                    //$('#ExportTable').html(createExport(d.data));
+                    var type = 'dahoanthien';
+                    if (exportType == 2)
+                        type = 'chuahoanthien';
+                    else if (exportType == 3)
+                        type = 'toanbo';
+                    JSONToCSVConvertor(exportData, 'dstbnd49_' + type + '_' + d.SHA);
+                }
+            });
+        });
+    </script>
+}

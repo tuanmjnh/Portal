@@ -13,6 +13,7 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
+    @Html.AntiForgeryToken()
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -25,7 +26,7 @@
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    @if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+                    @if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
                     {
                         <li>
                             @Html.ActionLink("Quản lý", "Index", "FileManager", new { area = "" }, null)
@@ -51,6 +52,13 @@
                             <ul>
                                 <li>@Html.ActionLink("Tra cứu - Đối soát cước", "Index", "Report", new { area = "Cuoc" }, null)</li>
                                 <li>@Html.ActionLink("Thuê bao thiếu thông tin", "Index", "Report", new { area = "Cuoc" }, null)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            @Html.ActionLink("ND49", "Index", "DSThueBao", new { area = "ND49" }, null)
+                            <ul>
+                                <li>@Html.ActionLink("ND49", "Index", "DSThueBao", new { area = "ND49" }, null)</li>
+                                <li>@Html.ActionLink("Import", "Import", "DSThueBao", new { area = "ND49" }, null)</li>
                             </ul>
                         </li>
                         <li>
@@ -84,16 +92,7 @@
                             </ul>
                         </li>
                     }
-                    @if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.leader }))
-                    {
-                        <li>
-                            @Html.ActionLink("Cước", "Index", "Report", new { area = "Cuoc" }, null)
-                            <ul>
-                                <li>@Html.ActionLink("Tra cứu - Đối soát cước", "Index", "Report", new { area = "Cuoc" }, null)</li>
-                            </ul>
-                        </li>
-                    }
-                    @if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.staff }))
+                    @if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.staff, Authentication.Roles.leader, Authentication.Roles.manager }))
                     {
                         <li>
                             <a href="javascript:;">ĐH.SXKD</a>
@@ -115,12 +114,15 @@
                             </ul>
                         </li>
                         <li>
+                            @Html.ActionLink("ND49", "Index", "DSThueBao", new { area = "ND49" }, null)
+                        </li>
+                        @*<li>
                             @Html.ActionLink("DV CNTT", "Index", "Customer", new { area = "dvcntt" }, null)
                             <ul>
                                 <li>@Html.ActionLink("Khách hàng", "Index", "Customer", new { area = "dvcntt" }, null)</li>
                                 <li>@Html.ActionLink("Quản trị dịch vụ", "Index", "Services", new { area = "dvcntt" }, null)</li>
                             </ul>
-                        </li>
+                        </li>*@
                         @*<li>
                             @Html.ActionLink("DV CNTT", "Index", "ListCNTT", new { area = "dvcntt" }, null)
                             <ul>
@@ -132,13 +134,13 @@
                             <li>@Html.ActionLink("Quản trị dịch vụ", "Index", "Services", new { area = "dvcntt" }, null)</li>
                             </ul>
                             </li>*@
-                        <li>
+                        @*<li>
                             @Html.ActionLink("CCBS", "Index", "EloadPTTB", new { area = "ccbs" }, null)
                             <ul>
                                 <li>@Html.ActionLink("Danh sách PTTB Eload", "Index", "EloadPTTB", new { area = "ccbs" }, null)</li>
                                 <li>@Html.ActionLink("Danh sách tài khoản Eload", "Index", "EloadUser", new { area = "ccbs" }, null)</li>
                             </ul>
-                        </li>
+                        </li>*@
                         <li>
                             @Html.ActionLink("Khác", "Index", "Mixed", new { area = "" }, null)
                             <ul>
@@ -155,10 +157,15 @@
                         <a href="javascript:;" class="btn-ntfc">
                             <span class="ntfc-count">0</span> <span class="fa fa-envelope"></span>
                         </a>
-                        <div class="ntfc-list" tabindex="-1"></div>
+                        <div class="ntfc-list" tabindex="-1">
+                            <div class="ntfc-list-content"></div>
+                            <div class="ntfc-list-footer">
+                                <span class="btn btn-warning pull-right ntfc-btn-refresh"><i class="fa fa-refresh"></i></span>
+                            </div>
+                        </div>
                     </li>
                     <li class="dropdown account">
-                        @if (Portal.Common.Auth.isAuth)
+                        @if (Authentication.Auth.isAuth)
                         {
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 @(Authentication.Auth.AuthUser.full_name != null && !String.IsNullOrWhiteSpace(Authentication.Auth.AuthUser.full_name) ? Authentication.Auth.AuthUser.full_name : Authentication.Auth.AuthUser.username)
@@ -263,6 +270,7 @@
     @RenderSection("ScriptForm", required: false)
     @RenderSection("ScriptList", required: false)
     <script>
+        var token = { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() };
         $('.priceVND').each(function () {
             $(this).html(parseFloat($(this).html()).format())
         });
@@ -335,7 +343,67 @@
             "&datetime=" + encodeURIComponent($('#started_at').val()) + '-' + encodeURIComponent($('#ended_at').val()) +
             "&datetimeType=" + $('.datetimeType').find('.active').attr('data-val');
         //}
-    });
+        });
+        function JSONToCSVConvertor(JSONData, filename = 'ExportDataCSV', ReportTitle, ShowLabel) {
+
+            //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+            var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+            var CSV = '';
+            //This condition will generate the Label/Header
+            if (ShowLabel) {
+                var row = "";
+
+                //This loop will extract the label from 1st index of on array
+                for (var index in arrData[0]) {
+                    //Now convert each value to string and comma-seprated
+                    row += index + ',';
+                }
+                row = row.slice(0, -1);
+                //append Label row with line break
+                CSV += row + '\r\n';
+            }
+
+            //1st loop is to extract each row
+            for (var i = 0; i < arrData.length; i++) {
+                var row = "";
+                //2nd loop will extract each column and convert it in string comma-seprated
+                for (var index in arrData[i]) {
+                    row += '"' + arrData[i][index] + '",';
+                }
+                row.slice(0, row.length - 1);
+                //add a line break after each row
+                CSV += row + '\r\n';
+            }
+
+            if (CSV == '') {
+                alert("Invalid data");
+                return;
+            }
+
+            //this trick will generate a temp "a" tag
+            var link = document.createElement("a");
+            link.id = "lnkDwnldLnk";
+
+            //this part will append the anchor tag and remove it after automatic click
+            document.body.appendChild(link);
+
+            var BOM = "\uFEFF";
+            var csv = BOM + CSV;
+            blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            var csvUrl = window.webkitURL.createObjectURL(blob);
+            filename = filename + '.csv';
+            $("#lnkDwnldLnk")
+                .attr({
+                    'download': filename,
+                    'href': csvUrl
+                });
+
+            $('#lnkDwnldLnk')[0].click();
+            document.body.removeChild(link);
+        }
+        function checkJsonData(value) {
+            return value == 'null' || value === null || value == 'Invalid date' ? '' : value;
+        }
     function exportToExcel(htmls, filename) {
         var uri = 'data:application/vnd.ms-excel;base64,';
         var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
@@ -395,26 +463,31 @@
         //    //if (e.target !='<div class="ntfc-item-content-left">')
         //        console.log($(e.target));
         //});
-        $(document).ready(function () {
-            $.get('@Url.Action("getNotification", "Notification", new { area = "" })', function (d) {
+        var NotificationOffset = 0;
+        var limit = 5;
+        function getNotification(offset = 0, limit = 10) {
+            var data = { offset: offset, limit: limit }
+            $.get('@Url.Action("getNotification", "Notification", new { area = "" })', data, function (d) {
                 if (d.data) {
                     var html = parseInt(d.total) > 0 ? d.total : 0;
                     $('.ntfc-count').html(html);
                     html = '';
                     for (var i = 0; i < d.data.length; i++) {
-                        html += '<div class="ntfc-item">\
+                        var extras = JSON.parse(d.data[i].EXTRAS);
+                        var url = '@TM.Url.BaseUrl/' + extras.URL + '?id=' + extras.MA_TT_ID + '&time=' + moment(extras.TIME_BILL).format('MM/YYYY');//encodeURIComponent
+                        html += '<div class="ntfc-item ' + (d.data[i].FLAG == 2 ? 'readed' : '') + '" data-id="' + d.data[i].ID + '">\
                                 <div class="ntfc-item-head">\
                                     <div class="ntfc-item-head-left"><i class="fa fa-user"></i> <span class="ntfc-left-user">'+ d.data[i].SOURCE + '</span>: <span ntfc-left-title>' + d.data[i].TITLE + '</span></div>\
                                     <div class="ntfc-item-head-right"><i class="fa fa-clock-o"></i> ' + moment(d.data[i].CREATEDAT).format('DD/MM/YYYY') + '</div>\
                                 </div>\
                                 <div class="ntfc-item-content">\
-                                    <div class="ntfc-item-content-left"><a href="@TM.Url.BaseUrl/'+ d.data[i].URL+'?id=' + d.data[i].ROOT_ID +'">' + d.data[i].DESC + '</a></div>\
-                                    <div class="ntfc-item-content-right"><i class="fa fa-trash-o pointer ntfc-btn-remove"></i></div>\
+                                    <div class="ntfc-item-content-left"><a class="ntfc-btn-action" data-url="' + url + '" href="#">' + d.data[i].DESC + '</a></div>\
+                                    <div class="ntfc-item-content-right"><i class="fa fa-trash-o pointer ntfc-btn-remove" title="Xóa thông báo"></i></div>\
                                 </div>\
                             </div>';
                     }
                     //'+ d.data[i].URL + '/' + d.data[i].ROOT_ID +'
-                    $('.ntfc-list').html(html);
+                    $('.ntfc-list-content').append(html);
                 }
                 //if (d.success)
                 //$('#TMAlert').TMAlert({ type: "success", message: d.success });
@@ -424,6 +497,49 @@
                     $('#TMAlert').TMAlert({ type: "warning", message: d.warning });
                 if (d.url)
                     window.location = d.url;
+            });
+        }
+        $(document).ready(function () {
+            getNotification(NotificationOffset, limit);
+        });
+        $('.ntfc-btn-refresh').on('click', function () {
+            NotificationOffset++;
+            var offset = NotificationOffset * limit;
+            getNotification(offset, limit);
+        });
+
+        function NotificationUpdateStatus(obj) {
+            var data = $.extend({}, token, obj.data);
+            $.post('@Url.Action("UpdateStatus", "Notification", new { area = "" })', data, function (d) {
+                if (d.success)
+                    if (typeof obj.success == 'function') obj.success();
+                //$('#TMAlert').TMAlert({ type: "success", message: d.success });
+                if (d.danger)
+                    $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                if (d.warning)
+                    $('#TMAlert').TMAlert({ type: "warning", message: d.warning });
+                if (d.url)
+                    window.location = d.url;
+            });
+        }
+        $(document).on('click', '.ntfc-btn-action', function (e) {
+            e.preventDefault();
+            NotificationUpdateStatus({
+                data: { id: $(this).parents('.ntfc-item').attr('data-id'), op: 2, url: $(this).attr('data-url') },
+                ele: $(this)
+            });
+        });
+        $(document).on('click', '.ntfc-btn-remove', function (e) {
+            e.preventDefault();
+            var $this = $(this);
+            NotificationUpdateStatus({
+                data: { id: $this.parents('.ntfc-item').attr('data-id'), op: 0, },
+                ele: $this,
+                success: function () {
+                    console.log($this.parents('.ntfc-item'));
+                    $('.ntfc-count').html(parseInt($('.ntfc-count').html())-1);
+                    $this.parents('.ntfc-item').fadeOut();
+                }
             });
         });
     </script>

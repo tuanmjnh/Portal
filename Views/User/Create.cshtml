@@ -1,4 +1,4 @@
-﻿@model Portal.Models.user
+﻿@model Authentication.user
 
 @{
     ViewBag.Title = "Đăng ký tài khoản";
@@ -111,7 +111,7 @@
                             <label><input type="radio" name="roles" value="@Authentication.Roles.mod" /> Mod</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.director" /> Giám đốc</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.manager" /> Trưởng phòng</label>
-                            <label><input type="radio" name="roles" value="@Authentication.Roles.leader" /> Tổ trưởng</label>
+                            <label><input type="radio" name="roles" value="@Authentication.Roles.leader" /> Giám đốc đơn vị</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.staff" checked /> Nhân viên</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.managerBill" checked /> Cước</label>
                         </div>

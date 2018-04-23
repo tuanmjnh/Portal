@@ -156,7 +156,7 @@ namespace Portal.Areas.Cuoc.Controllers
             finally { SQLServer.Close(); }
         }
         [HttpPost, ValidateAntiForgeryToken]
-        public JsonResult PostComment(Guid? Parent, string MATT, string TimeBill, string Contents)
+        public JsonResult PostComment(Guid? Parent, Guid id, string MATT, string TimeBill, string Contents)
         {
             var index = 0;
             try
@@ -189,20 +189,27 @@ namespace Portal.Areas.Cuoc.Controllers
                 data.Add(cmt);
                 SQLServer.Connection.Insert(cmt);
                 //
+                var extras = new EXTRAS();
+                extras.MA_TT_ID = id.ToString();
+                extras.MA_TT = cmt.MA_TT_HNI;
+                extras.TIME_BILL = cmt.TIME_BILL;
+                extras.URL = "CUOC/Report";
+                //
                 if (Authentication.Auth.AuthUser.roles == Authentication.Roles.admin || Authentication.Auth.AuthUser.roles == Authentication.Roles.managerBill)
                 {
                     if (tmp != null)
                     {
                         var ntfc = new Billing.Models.NOTIFICATION();
                         ntfc.ID = Guid.NewGuid();
-                        ntfc.ROOT_ID = cmt.ID.ToString();
-                        ntfc.PARENT_ID = cmt.MA_TT_HNI;
-                        ntfc.URL = "CUOC/Report";
+                        //ntfc.ROOT_ID = cmt.ID.ToString();
+                        //ntfc.PARENT_ID = cmt.MA_TT_HNI;
+                        //ntfc.URL = "CUOC/Report";
                         ntfc.SOURCE = ntfc.CREATEDBY = cmt.CREATEDBY;
                         ntfc.DESTINATION = tmp.CREATEDBY;
                         ntfc.TITLE = "Yêu cầu đối xoát cước";
                         ntfc.DESC = $"Mã thanh toán: {cmt.MA_TT_HNI} - Kỳ cước: {TimeBill}";
                         ntfc.CREATEDAT = cmt.CREATEDAT;
+                        ntfc.EXTRAS = Newtonsoft.Json.JsonConvert.SerializeObject(extras);
                         ntfc.FLAG = 1;
                         SQLServer.Connection.Insert(ntfc);
                     }
@@ -216,14 +223,15 @@ namespace Portal.Areas.Cuoc.Controllers
                     {
                         var ntfc = new Billing.Models.NOTIFICATION();
                         ntfc.ID = Guid.NewGuid();
-                        ntfc.ROOT_ID = cmt.ID.ToString();
-                        ntfc.PARENT_ID = cmt.MA_TT_HNI;
-                        ntfc.URL = "CUOC/Report";
+                        //ntfc.ROOT_ID = cmt.ID.ToString();
+                        //ntfc.PARENT_ID = cmt.MA_TT_HNI;
+                        //ntfc.URL = "CUOC/Report";
                         ntfc.SOURCE = ntfc.CREATEDBY = cmt.CREATEDBY;
                         ntfc.DESTINATION = i.username;
                         ntfc.TITLE = "Yêu cầu đối xoát cước";
                         ntfc.DESC = $"Mã thanh toán: {cmt.MA_TT_HNI} - Kỳ cước: {TimeBill}";
                         ntfc.CREATEDAT = cmt.CREATEDAT;
+                        ntfc.EXTRAS = Newtonsoft.Json.JsonConvert.SerializeObject(extras);
                         ntfc.FLAG = 1;
                         notification.Add(ntfc);
                     }
@@ -273,5 +281,12 @@ namespace Portal.Areas.Cuoc.Controllers
     {
         public string maDvi { get; set; }
         public string timeBill { get; set; }
+    }
+    public class EXTRAS
+    {
+        public string MA_TT_ID { get; set; }
+        public string MA_TT { get; set; }
+        public string URL { get; set; }
+        public DateTime TIME_BILL { get; set; }
     }
 }

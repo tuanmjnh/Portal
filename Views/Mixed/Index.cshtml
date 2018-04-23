@@ -90,30 +90,41 @@
         </div>
     </div>
 </form>
-<form id="HDDTForm" method="post" action="@Url.Action("AnhThaiMeo")" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
+@*//*@
     <div class="form-horizontal">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">Anh Thái Mèo</h3>
             </div>
             <div class="panel-body">
-                <div class="form-group">
-                    <div class="col-md-8">
-                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" multiple data-val="true"
-                               data-val-required="Vui lòng chọn file" data-rule-extension=".xls" data-msg-extension="Định dạng tệp phải là dbf." />
-                        <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                <form id="HDDTForm" method="post" action="@Url.Action("AnhThaiMeo")" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <input type="file" id="FileUpload" name="FileUpload" class="file-upload" multiple data-val="true"
+                                   data-val-required="Vui lòng chọn file" data-rule-extension=".xls" data-msg-extension="Định dạng tệp phải là dbf." />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                        </div>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input type="submit" class="btn btn-success" value="Xử lý" />
+                        </div>
+                    </div>
+                </form>
+                <hr/>
                 <div class="form-group">
-                    <div class="col-md-12">
-                        <input type="submit" class="btn btn-success" value="Xử lý" />
+                    <div class="col-lg-6">
+                        <textarea id="txtCommandPortInput" class="form-control" rows="5"></textarea>
+                    </div>
+                    <div class="col-lg-6">
+                        <textarea id="txtCommandPortOutput" class="form-control" rows="5"></textarea>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</form>
+
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Tools</h3>
@@ -128,7 +139,6 @@
     </div>
 </div>
 @section ScriptForm{
-    @Html.Partial("ScriptForm")
     <script>
         //
         var reg10 = /\d{10}/g;
@@ -184,6 +194,25 @@
         $('.input').on('keyup', function () {
             var input = $(this).val();
             $('.output').html('<i>' + conver(input) + '</i>');
+        })
+        $('#txtCommandPortInput').on('keyup', function () {
+            var data = $.trim($(this).val()).split('\n');
+            var cmd =
+                ['interface {0}',
+                'gemport 7 name NMS tcont 1',
+                'switchport mode hybrid vport 7',
+                'service-port 7 vport 7 user-vlan 4000 vlan 4001',
+                'exit',
+                'pon-onu-mng {0}',
+                'service 7 gemport 7 vlan 4000',
+                'exit'].join('\n');
+            //gpon-onu_1/1/13:23
+            var output = '';
+            for (var i = 0; i < data.length; i++) {
+                var tmp = jQuery.validator.format(cmd);
+                output += tmp(data[i]) + '\n';
+            }
+            $('#txtCommandPortOutput').html($.trim(output));
         })
     </script>
 }

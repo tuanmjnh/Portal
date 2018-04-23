@@ -106,7 +106,7 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id_key,title,level,desc,orders,flag")] Models.group group)
+        public ActionResult Create([Bind(Include = "id_key,title,level,desc,orders,extras,flag")] Models.group group)
         {
             if (ModelState.IsValid)
             {
@@ -144,7 +144,7 @@ namespace Portal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,id_key,title,level,desc,orders,flag")] Models.group group_tmp)
+        public ActionResult Edit([Bind(Include = "id,id_key,title,level,desc,orders,extras,flag")] Models.group group_tmp)
         {
             if (ModelState.IsValid)
             {
@@ -154,6 +154,7 @@ namespace Portal.Controllers
                 group.level = group_tmp.level;
                 group.desc = group_tmp.desc;
                 group.orders = group_tmp.orders;
+                group.extras = group_tmp.extras;
                 group.flag = group_tmp.flag;
                 group.updated_by = Authentication.Auth.AuthUser.id.ToString();
                 group.updated_at = DateTime.Now;

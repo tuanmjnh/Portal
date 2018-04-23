@@ -177,6 +177,9 @@
     <Compile Include="Areas\dvcntt\Controllers\ListCNTTController.cs" />
     <Compile Include="Areas\dvcntt\Controllers\ReportSalesController.cs" />
     <Compile Include="Areas\dvcntt\Models\hdall.cs" />
+    <Compile Include="Areas\ND49\Controllers\DSThueBaoController.cs" />
+    <Compile Include="Areas\ND49\Models\ND49.cs" />
+    <Compile Include="Areas\ND49\ND49AreaRegistration.cs" />
     <Compile Include="Areas\PTTB\Controllers\FSecureController.cs" />
     <Compile Include="Areas\PTTB\Controllers\ManagerContractController.cs" />
     <Compile Include="Areas\PTTB\Models\HD_THUEBAO_BKN.cs" />
@@ -517,6 +520,9 @@
     <Content Include="language\en-us.ini" />
     <Content Include="language\vi-vn.ini" />
     <Content Include="language\vi-vn.json" />
+    <Content Include="Areas\ND49\Views\web.config" />
+    <Content Include="Areas\ND49\Views\DSThueBao\Index.cshtml" />
+    <Content Include="Areas\ND49\Views\DSThueBao\Import.cshtml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -917,6 +923,7 @@
     <Folder Include="Areas\Cuoc\Views\Shared\" />
     <Folder Include="Areas\Cuoc\Views\TraCuu\" />
     <Folder Include="Areas\dvcntt\Views\Shared\" />
+    <Folder Include="Areas\ND49\Views\Shared\" />
     <Folder Include="Areas\PTTB\Views\Shared\" />
     <Folder Include="Areas\quanlytratientruoc\Models\" />
     <Folder Include="Areas\quanlytratientruoc\Views\Shared\" />

@@ -109,3 +109,10 @@ D:\Applications\Vinaphone\Portal\bin\Billing.Models.dll.config
 D:\Applications\Vinaphone\Portal\obj\Debug\Portal.csproj.CopyComplete
 D:\Applications\Vinaphone\Portal\bin\Authentication.dll
 D:\Applications\Vinaphone\Portal\bin\Authentication.pdb
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.Smo.dll
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.Management.Sdk.Sfc.dll
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.SqlEnum.dll
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.Dmf.Common.dll
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.Diagnostics.STrace.dll
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.ServiceBrokerEnum.dll
+D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.SqlTDiagM.dll

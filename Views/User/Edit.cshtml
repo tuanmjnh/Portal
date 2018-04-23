@@ -1,4 +1,4 @@
-﻿@model Portal.Models.user
+﻿@model Authentication.user
 
 @{
     ViewBag.Title = "Cập nhật thông tin tài khoản";
@@ -112,7 +112,7 @@
                             <label><input type="radio" name="roles" value="@Authentication.Roles.mod" @(Model.roles == Authentication.Roles.mod ? "checked" : "") /> Mod</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.director" @(Model.roles == Authentication.Roles.director ? "checked" : "") /> Giám đốc</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.manager" @(Model.roles == Authentication.Roles.manager ? "checked" : "") /> Trưởng phòng</label>
-                            <label><input type="radio" name="roles" value="@Authentication.Roles.leader" @(Model.roles == Authentication.Roles.leader ? "checked" : "") /> Tổ trưởng</label>
+                            <label><input type="radio" name="roles" value="@Authentication.Roles.leader" @(Model.roles == Authentication.Roles.leader ? "checked" : "") /> Giám đốc đơn vị</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.staff" @(Model.roles == Authentication.Roles.staff ? "checked" : "") /> Nhân viên</label>
                             <label><input type="radio" name="roles" value="@Authentication.Roles.managerBill" @(Model.roles == Authentication.Roles.managerBill ? "checked" : "") /> Cước</label>
                         </div>

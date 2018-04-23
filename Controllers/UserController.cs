@@ -156,28 +156,22 @@ namespace Portal.Controllers
         {
             return Json(!db.users.Any(u => u.username.ToLower() == username.ToLower()), JsonRequestBehavior.AllowGet);
         }
-        [HttpGet]
-        public ActionResult ResetPassword(Guid id)
+        [HttpPost]
+        public JsonResult ResetPassword(Guid id)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    var rs = db.users.Find(id);
-                    var newpass = Guid.NewGuid().ToString().Split('-');
-                    rs.password = TM.Encrypt.CryptoMD5TM(newpass[0] + rs.salt);
-                    db.SaveChanges();
-                    this.success("Mật khẩu mới của tài khoản <strong>" + rs.username + "</strong> là: <strong>" + newpass[0] + "</strong>");
-                    ModelState.Clear();
-                }
-                else
-                    TempData["Message"] = "Lỗi trong quá trình xử lý";
+                var rs = db.users.Find(id);
+                var newpass = Guid.NewGuid().ToString().Split('-');
+                newpass[0] = "bk123456";
+                rs.password = TM.Encrypt.CryptoMD5TM(newpass[0] + rs.salt);
+                db.SaveChanges();
+                return Json(new { success = $"Mật khẩu mới của tài khoản <strong>{rs.username}</strong> là: <strong>{newpass[0]}</strong>!" }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
-                TempData["Message"] = "Lỗi trong quá trình xử lý";
+                return Json(new { error = $"Lỗi trong quá trình xử lý!" }, JsonRequestBehavior.AllowGet);
             }
-            return RedirectToAction("Index");
         }
         public ActionResult Edit(Guid id)
         {

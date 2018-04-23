@@ -17,7 +17,7 @@
        data-show-toggle="true"
        data-show-columns="true"
        data-show-export="true"
-       data-detail-view="true"
+       data-detail-view="false"
        data-detail-formatter="detailFormatter"
        data-minimum-count-columns="2"
        data-show-pagination-switch="true"
@@ -94,10 +94,10 @@
     <script>
         AjaxLoad();
         var dateNow = moment().subtract(1, 'months');
-        $('.date').datetimepicker({
+        var dtpicker = $('.date').datetimepicker({
             viewMode: "months",
             //dayViewHeaderFormat: 'MMMM YYYY',
-            defaultDate: new Date(dateNow.year(), dateNow.month(), 1),
+            defaultDate: new Date(dateNow.year(), dateNow.month()),
             format: 'MM/YYYY',
         });
         var token = { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() };
@@ -345,7 +345,7 @@
                 txtDSC.val('').focus();
                 return;
             }
-            var data = $.extend({}, token, { Parent: mParent.attr('data-id'), MATT: $('#MATT').val(), TimeBill: $('#TimeBill').val(), Contents: content });
+            var data = $.extend({}, token, { Parent: mParent.attr('data-id'), id: $('#dbkhid').val(), MATT: $('#MATT').val(), TimeBill: $('#TimeBill').val(), Contents: content });
             $.post('@Url.Action("PostComment")', data, function (d) {
                 if (d.data) {
                     if (parent.hasClass('formReply')) {
@@ -371,10 +371,18 @@
             },
             modalCancel: function () { }
         });
+       
+        var checkAjaxNotification = true;
         $(document).ajaxComplete(function () {
-            $('#BillDetails').modal('show');
-            var data = $.extend({}, token, { id: row.ID, TimeBill: $('#TimeBill').val() });
-            GetBillDetails(data);
+            if (checkAjaxNotification && QueryString['id'] !== undefined && QueryString['time'] !== undefined) {
+                var d = $('.date').data('DateTimePicker');
+                d.date(moment('01/' + QueryString['time'], 'DD/MM/YYYY'));
+
+                $('#BillDetails').modal('show');
+                var data = $.extend({}, token, { id: QueryString['id'], timebill: $('#TimeBill').val() });
+                GetBillDetails(data);
+                checkAjaxNotification = false;
+            }
         });
         @*$(document).on('click', '.btnSendDSC', function () {
             $(this).TMConfirm({

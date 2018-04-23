@@ -16,7 +16,7 @@
         @if (ViewBag.flag == 0)
         {
             <a href="javascript:;" class="btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"><i class="glyphicon glyphicon-refresh"></i></a>
-            if (Portal.Common.Auth.isAuth && Portal.Common.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+            if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
             {
                 <a href="javascript:;" class="btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"><i class="glyphicon glyphicon-remove"></i></a>
             }

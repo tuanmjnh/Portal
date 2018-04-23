@@ -71,6 +71,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .show-trash a{text-align:center}
 .show-trash a:hover,.show-trash a:active,.show-trash a:visited,.show-trash a:focus{text-decoration:none}
 .ml4{margin-left:4px}
+.mb5{margin-bottom:5px}
 .mb10{margin-bottom:10px}
 .mb20{margin-bottom:20px}
 .pl10{padding-left:10px}
@@ -122,15 +123,23 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     position: absolute;
     min-width: 450px;
     right: 0;
-    background-color: #5a5a5a;
     margin-top: 1px;
     display:none;
 }
+.ntfc-list:focus {
+    outline:none
+}
+    .ntfc-list .ntfc-list-content {
+        background-color: #337ab7;
+    }
+    .ntfc-list .ntfc-list-footer {
+        /*background-color: #555;*/
+    }
     .ntfc-list .ntfc-item, .ntfc-list .ntfc-item a {
-        color: #ededed;
+        color: #cbcbcb;
         transition: none;
     }
-      .ntfc-list .ntfc-item:hover, .ntfc-list .ntfc-item a:hover {
+      .ntfc-list .ntfc-item:hover, .ntfc-list .ntfc-item:hover a {
             color: #fff;
         }
     .ntfc-list .ntfc-item {
@@ -138,6 +147,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         border-bottom: 1px solid #9d9d9d;
         overflow: hidden;
     }
+        .ntfc-list .ntfc-item.readed {
+            background-color: #5a5a5a;
+        }
         .ntfc-list .ntfc-item:last-child {
             border-bottom: none;
         }

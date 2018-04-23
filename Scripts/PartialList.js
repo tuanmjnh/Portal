@@ -35,7 +35,7 @@ $(function () {
     });
     //Default Flag
     setFlagActive(params_flag);
-})
+});
 //function initTable() {
 //    $($table).bootstrapTable({
 //        locales: 'customs',

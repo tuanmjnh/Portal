@@ -51,6 +51,13 @@
                             <span class="field-validation-valid text-danger" data-valmsg-for="orders" data-valmsg-replace="true"></span>
                         </div>
                     </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="extras">Thêm</label>
+                        <div class="col-md-9">
+                            <input class="form-control text-box single-line" id="extras" name="extras" type="text" value="@Html.DisplayFor(m=>m.extras)">
+                            @*<span class="field-validation-valid text-danger" data-valmsg-for="extras" data-valmsg-replace="true"></span>*@
+                        </div>
+                    </div>
                 </div>
                 @Html.Partial("PanelFooterNotes")
             </div>
