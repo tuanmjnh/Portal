@@ -28,7 +28,7 @@
        data-side-pagination="server"
        data-response-handler="responseHandler"
        data-query-params="queryParams"
-       data-url="@Url.Action("Select","Report",new { area = "Cuoc" })"
+       data-url-select="Report/Select"
        data-url-create="Insert"
        data-url-edit="Update">
     <thead>
@@ -74,7 +74,10 @@
             <div class="modal-footer">
                 <div class="form-group results result-comment text-left"></div>
                 <div class="form-group">
-                    <div class="col-md-11 row"><input type="text" class="form-control txtDSC" placeholder="" /></div>
+                    <div class="col-md-11 row">
+                        <textarea class="form-control txtDSC" placeholder=""></textarea>
+                        @*<input type="text" class="form-control txtDSC" placeholder="" />*@
+                    </div>
                     <span class="btn btn-warning btnSendDSC">Gửi yêu cầu</span>
                 </div>
                 <input type="hidden" id="cmtVal" />
@@ -92,7 +95,7 @@
     <script src="~/Plugin/bootstrap-table/extensions/export/tableExport.js"></script>
     <script src="~/Scripts/PartialList.js"></script>
     <script>
-        AjaxLoad();
+        AjaxLoaddingBounce();
         var dateNow = moment().subtract(1, 'months');
         var dtpicker = $('.date').datetimepicker({
             viewMode: "months",
@@ -322,8 +325,12 @@
         $(document).on('click', '.btnReply', function () {
             var parent = $(this).parent();
             if (parent.find('.formReply').length > 0) return;
+            //var html = '<div class="form-group formReply" style="text-align:right;padding-left:38px">\
+            //        <div class="col-md-11 row"><input type="text" class="form-control txtDSC" placeholder="Nhập trả lời ' + parent.attr('data-user') + ' - Kỳ cước: ' + $('#TimeBill').val() + '" /></div>\
+            //        <span class="btn btn-success btnSendDSC">Gửi yêu cầu</span>\
+            //    </div>';
             var html = '<div class="form-group formReply" style="text-align:right;padding-left:38px">\
-                    <div class="col-md-11 row"><input type="text" class="form-control txtDSC" placeholder="Nhập trả lời ' + parent.attr('data-user') + ' - Kỳ cước: ' + $('#TimeBill').val() + '" /></div>\
+                    <div class="col-md-11 row mb5"><textarea class="form-control txtDSC" placeholder="Nhập trả lời ' + parent.attr('data-user') + ' - Kỳ cước: ' + $('#TimeBill').val() + '"></textarea></div>\
                     <span class="btn btn-success btnSendDSC">Gửi yêu cầu</span>\
                 </div>';
             parent.append(html);

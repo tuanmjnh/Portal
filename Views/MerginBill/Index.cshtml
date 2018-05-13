@@ -451,7 +451,7 @@
         })
         $('#btnCheckMoney').on('click', function (e) {
             e.preventDefault();
-            AjaxLoad();
+            AjaxLoaddingBounce();
             $.get('@Url.Action("CheckMoney")?time=' + $('#time').val() + '&ckhMerginMonth=' + $('#ckhMerginMonth').prop('checked'),function (d) {
                 if (d.success)
                 {

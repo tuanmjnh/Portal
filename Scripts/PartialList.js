@@ -1,8 +1,8 @@
 ﻿//Get Table Bootstrap
 var $table = '#table',
-    $url = $area + $($table).attr('data-url'),
-    $urlCreate = $areaSegment + $($table).attr('data-url-create'),
-    $urlEdit = $areaSegment + $($table).attr('data-url-edit'),
+    $urlSelect = $controllerUrl + $($table).attr('data-url-select'),
+    $urlCreate = $controllerUrl + $($table).attr('data-url-create'),
+    $urlEdit = $controllerUrl + $($table).attr('data-url-edit'),
     $remove = '#remove',
     selections = [],
     params_flag = 1,
@@ -21,7 +21,7 @@ $(function () {
     //
     //initTable();
     $($table).bootstrapTable({
-        url: $url,
+        url: $urlSelect,
         locales: 'customs'
     });
     $($table).on('load-success.bs.table', function () {
@@ -35,7 +35,7 @@ $(function () {
     });
     //Default Flag
     setFlagActive(params_flag);
-});
+})
 //function initTable() {
 //    $($table).bootstrapTable({
 //        locales: 'customs',
@@ -126,9 +126,9 @@ function detailFormatter(index, row) {
 }
 function cmdFormatter(value, row, index) {
     return [
-        '<a class="edit isTooltip" href="javascript:void(0)" data-toggle="modal" data-target="' + ModalEdit + '" title="' + TMLanguage('Global.edit') + '">',
+        '<a class="btnEdit isTooltip" href="javascript:void(0)" data-toggle="modal" data-target="' + ModalEdit + '" title="' + TMLanguage('Global.edit') + '">',
         '<i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>  ',
-        '<a class="delete isTooltip" href="javascript:void(0)" title="' + (params_flag == 0 ? TMLanguage('Global.recover') : TMLanguage('Global.delete')) + '">',
+        '<a class="btnDelete isTooltip" href="javascript:void(0)" title="' + (params_flag == 0 ? TMLanguage('Global.recover') : TMLanguage('Global.delete')) + '">',
         '<i class="fa ' + (params_flag == 0 ? 'fa-recycle' : 'fa-times') + '" aria-hidden="true"></i></a>'
     ].join('');
 }
@@ -168,25 +168,24 @@ function queryParams(params) {
     //return params;
 }
 //Events bootstrapTable
+
 window.cmdEvents = {
-    'click .edit': function (e, value, row, index) {
-        getForm({ element: e, url: $urlEdit, data: { id: row.id }, form: formEdit, modal: ModalEdit, TinyMCE: true })
+    'click .btnEdit': function (e, value, row, index) {
+        getForm({ element: e, url: $urlEdit, data: { id: row.ID }, form: formEdit, modal: ModalEdit, TinyMCE: true })
     },
-    'click .delete': function (e, value, row, index) {
-        if (params_flag == 1)
-            $('#ModalComfirmBody').html(TMLanguage('Global.msgDeleteRecord'));
-        else
-            $('#ModalComfirmBody').html(TMLanguage('Global.msgRecoverRecord'));
-        $('#ModalComfirm').modal('show');
-        $('#ModalComfirmBtnConfirm').off('click').on('click', function () {
-            $.post($url + '/Delete', { id: row.id, __RequestVerificationToken: $('[name="__RequestVerificationToken"]').val() }, function (d) {
-                if (d.success) {
-                    $($TMAlert).TMAlert({ type: "success", message: TMLanguage(d.success) });
-                    $($table).bootstrapTable('remove', { field: 'id', values: [row.id] });
-                }
-                else if (d.danger) $($TMAlert).TMAlert({ type: "danger", message: TMLanguage(d.danger) });
-            })
-        })
+    'click .btnDelete': function (e, value, row, index) {
+        $(document).TMConfirm({
+            target: '.btnDelete',
+            modalOk: function () {
+                $.post($baseUrl + Segment[0] + '/Delete', { id: row.ID, __RequestVerificationToken: $('[name="__RequestVerificationToken"]').val() }, function (d) {
+                    if (d.success) {
+                        $($TMAlert).TMAlert({ type: "success", message: TMLanguage(d.success) });
+                        $($table).bootstrapTable('remove', { field: 'id', values: [row.id] });
+                    }
+                    else if (d.danger) $($TMAlert).TMAlert({ type: "danger", message: TMLanguage(d.danger) });
+                })
+            }
+        });
     },
     'click .resetPass': function (e, value, row, index) {
         $('#ModalComfirmBody').html(TMLanguage('Users.msgResetPassword'));
@@ -264,7 +263,7 @@ $($dateEnd).on('blur', function () {
     $($table).bootstrapTable('refresh');
 });
 //AjaxLoadding
-AjaxLoad();
+AjaxLoaddingBounce();
 //Create
 $($indexBtnAdd).off('click').on('click', function () {
     var ma = $(document).find(formCreate);
@@ -279,7 +278,7 @@ $($indexBtnAdd).off('click').on('click', function () {
             .fail(function () {
                 console.log('Error');
             })
-})
+});
 //Delete Recover
 $($indexBtnDeleteRecover).off('click').on('click', function () {
     var chk = $($table).find('[name="btSelectItem"]:checked');
@@ -378,9 +377,9 @@ $($indexBtnUse).off('click').on('click', function () {
     params_flag = 1;
     setFlagActive(params_flag);
     $($table).bootstrapTable('refresh');
-})
+});
 $($indexBtnTrash).off('click').on('click', function () {
     params_flag = 0;
     setFlagActive(params_flag);
     $($table).bootstrapTable('refresh');
-})
+});

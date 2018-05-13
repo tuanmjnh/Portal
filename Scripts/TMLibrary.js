@@ -959,19 +959,39 @@ Number.prototype.format = function (n, x) {
 //        $('#ajaxLoadTM').html('');
 //    });
 //}(jQuery);
-function AjaxLoad() {
-    //<!--Ajax loader-->
+
+//Ajax Loadding
+var backdropTag = '<div class="modal-backdrop fade show"></div>';
+function AjaxLoaddingSpinner(backdrop) {
+    var tag = 'css3Loader';
+    $('body').append('<div style="display:none" class="' + tag + '"></div>')
+    $(document).ajaxStart(function () {
+        if (backdrop)
+            $('body').append(backdropTag);
+        $('.' + tag).fadeIn('fast');
+    });
+    $(document).ajaxComplete(function () {
+        if (backdrop)
+            $('.' + tag).fadeOut('slow', function () {
+                $('body').find('.modal-backdrop').remove();
+            });
+        else
+            $('.' + tag).fadeOut('fast');
+    });
+};
+function AjaxLoaddingBounce(backdrop) {
+    var tag = 'ajax-loader';
     $('body').append(
-    '<div id="ajax-loader" style="display:none">' +
+        '<div class="' + tag + '" style="display:none">' +
         '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>' +
         '<div class="modal-backdrop fade in"></div></div>')
     $(document).ajaxStart(function () {
-        $('#ajax-loader').fadeIn('fast');
+        $('.' + tag).fadeIn('fast');
     });
     $(document).ajaxComplete(function () {
-        $('#ajax-loader').fadeOut('fast');
+        $('.' + tag).fadeOut('fast');
     });
-}
+};
 +function ($) {
     $.fn.GetExtension = function () {
         return $(this).selector.substring($(this).selector.lastIndexOf('.') + 1).toLowerCase();

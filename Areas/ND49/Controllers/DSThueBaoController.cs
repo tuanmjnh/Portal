@@ -66,14 +66,10 @@ namespace Portal.Areas.ND49.Controllers
 
                 //Get data for Search
                 if (!string.IsNullOrEmpty(obj.search))
-                    cdt += $"(tb.STB LIKE '%{obj.search}%' OR tb.BTS LIKE '%{obj.search}%' OR g.title LIKE '%{obj.search}%') AND ";
+                    cdt += $"(tb.STB LIKE '%{obj.search}%' OR tb.BTS LIKE '%{obj.search}%' OR g.title LIKE '%{obj.search}%' OR tb.NVQL LIKE '%{obj.search}%') AND ";
                 if (!string.IsNullOrEmpty(cdt))
                     qry += $" AND {cdt.Substring(0, cdt.Length - 5)}";
 
-                if (obj.flag != -1)
-                {
-                    qry += $" AND tb.FLAG={obj.flag}";
-                }
                 //export
                 if (obj.export == 2)
                 {
@@ -121,6 +117,11 @@ namespace Portal.Areas.ND49.Controllers
                     var rsJson = Json(new { data = export, SHA = Guid.NewGuid() }, JsonRequestBehavior.AllowGet);
                     rsJson.MaxJsonLength = int.MaxValue;
                     return rsJson;
+                }
+                //FLAG
+                if (obj.flag != -1)
+                {
+                    qry += $" AND tb.FLAG={obj.flag}";
                 }
                 //
                 var data = SQLServer.Connection.Query<Portal.Areas.ND49.Models.ND49>(qry);//.Where(m => m.Flag == flag);SQLServer.Connection.Query(qry);

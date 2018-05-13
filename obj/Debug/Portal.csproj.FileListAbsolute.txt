@@ -116,3 +116,5 @@ D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.Dmf.Common.dll
 D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.Diagnostics.STrace.dll
 D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.ServiceBrokerEnum.dll
 D:\Applications\Vinaphone\Portal\bin\Microsoft.SqlServer.SqlTDiagM.dll
+D:\Applications\Vinaphone\Portal\bin\roslyn\System.IO.Pipes.AccessControl.dll
+D:\Applications\Vinaphone\Portal\bin\Dapper.Contrib.xml

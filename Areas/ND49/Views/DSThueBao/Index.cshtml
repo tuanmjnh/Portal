@@ -61,7 +61,7 @@
        data-side-pagination="server"
        data-response-handler="responseHandler"
        data-query-params="queryParams"
-       data-url="@Url.Action("Select","DSThueBao",new { area = "ND49" })"
+       data-url-select="DSThueBao/Select"
        data-url-create="Insert"
        data-url-edit="Update">
     <thead>
@@ -119,7 +119,7 @@
     <script src="~/Plugin/bootstrap-table/extensions/export/tableExport.js"></script>
     <script src="~/Scripts/PartialList.js"></script>
     <script>
-        AjaxLoad();
+        //AjaxLoaddingBounce();
         var token = { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() };
         //Datetime
         var dateNow = new Date();
@@ -297,6 +297,7 @@
                         type = 'chuahoanthien';
                     else if (exportType == 3)
                         type = 'toanbo';
+                    console.log(exportData);
                     JSONToCSVConvertor(exportData, 'dstbnd49_' + type + '_' + d.SHA);
                 }
             });

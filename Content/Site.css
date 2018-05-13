@@ -292,7 +292,7 @@ label.priceVND,label.price{font-weight: bold; color: #fff}
     }
 }*/
 /**/
-#ajax-loader {
+.ajax-loader {
     position: fixed;
     z-index: 999;
     top: 50%;

@@ -2,6 +2,7 @@
 (function ($) {
     'use strict';
     var DF = {
+        host: window.location.protocol + '//' + window.location.host + '/',
         dir: 'Language',
         lang: 'vi-vn',
         langContent: 'tm-lang',
@@ -32,11 +33,12 @@
     })(window.location.pathname.substr(1).split('/'));
     $.fn.TMLanguage = function (op) {
         $.extend(DF, op);
-        var host = window.location.protocol + '//' + window.location.host + '/';
+        console.log(DF.host);
+        //var host = window.location.protocol + '//' + window.location.host + '/';
         var rs;
         $.ajax({
-            //url: host + DF.dir + '/' + DF.lang + '.json',
-            url: '../' + DF.dir + '/' + DF.lang + '.json',
+            url: DF.host + DF.dir + '/' + DF.lang + '.json',
+            //url: '../' + DF.dir + '/' + DF.lang + '.json',
             async: false,
             dataType: 'json',
             success: function (json) {
@@ -66,14 +68,14 @@
                 $('[' + DF.langSegment + ']').each(function () {
                     var thisAttr = $(this).attr(DF.langSegment).toLowerCase();
                     var val = thisAttr.split('.');
-                    if (val.length == 1) {
-                        if (Segment.length == 1 && json.hasOwnProperty('Global'))
+                    if (val.length === 1) {
+                        if (Segment.length === 1 && json.hasOwnProperty('Global'))
                             $(this).html(json['Global'].hasOwnProperty(val[0]) ? json['Global'][val[0]] : thisAttr)
                         else if (Segment.length > 1 && json.hasOwnProperty(Segment[1]))
                             $(this).html(json[Segment[1]].hasOwnProperty(val[0]) ? json[Segment[1]][val[0]] : thisAttr)
                     }
                     else if (val.length > 1) {
-                        if (Segment.length == 1 && json.hasOwnProperty(val[0]))
+                        if (Segment.length === 1 && json.hasOwnProperty(val[0]))
                             $(this).html(json[val[0]].hasOwnProperty(val[1]) ? json[val[0]][val[1]] : thisAttr)
                         else if (Segment.length > 1 && json.hasOwnProperty(Segment[1]))
                             $(this).html(json[Segment[1]].hasOwnProperty(val[1]) ? json[Segment[1]][val[1]] : thisAttr)
@@ -90,18 +92,18 @@
         rawFile.overrideMimeType("application/json");
         rawFile.open("GET", file, true);
         rawFile.onreadystatechange = function () {
-            if (rawFile.readyState === 4 && rawFile.status == "200") {
+            if (rawFile.readyState === 4 && rawFile.status === "200") {
                 callback(rawFile.responseText);
             }
         }
         rawFile.send(null);
     }
     function SetLangAttr(json, attr) {
-        if ($('[' + $attr[i] + ']') == 'true') {
+        //if ($('[' + $attr[i] + ']') === 'true') {
 
-        } else {
+        //} else {
 
-        }
+        //}
         var $attr = attr.split(',');
         if ($attr.length > 1)
             for (var i = 0; i < $attr.length; i++) {
@@ -126,25 +128,26 @@
     }
 
 })($);
-var TMLanguages = $.fn.TMLanguage();
-function TMLanguage(lang) {
-    lang = lang.toLowerCase().split('.');
-    if (lang.length > 1)
-        return TMLanguages[lang[0]][lang[1]];
-}
-function TMLanguageTitle(afterFix) {
-    afterFix = afterFix != undefined ? ' - ' + afterFix : '';
-    if (Segment.length == 1) {
-        if (TMLanguages.hasOwnProperty(Segment[0].toLowerCase()))
-            document.title = TMLanguages[Segment[0].toLowerCase()]['title'] + afterFix;
-        else
-            if (TMLanguages.hasOwnProperty(Segment[0].toLowerCase()()))
-                document.title = TMLanguages[Segment[0].toLowerCase()()]['title'] + afterFix;
-    }
-    else if (Segment.length > 1)
-        if (TMLanguages.hasOwnProperty(Segment[1].toLowerCase()))
-            document.title = TMLanguages[Segment[1].toLowerCase()]['title'] + afterFix;//TMLanguages[Segment[1]]['title'];
-}
+//var TMLanguages = $.fn.TMLanguage();
+//function TMLanguage(lang) {
+//    lang = lang.toLowerCase().split('.');
+//    if (lang.length > 1)
+//        return TMLanguages[lang[0]][lang[1]];
+//};
+//function TMLanguageTitle(afterFix) {
+//    afterFix = afterFix !== undefined ? ' - ' + afterFix : '';
+//    if (Segment.length == 1) {
+//        if (TMLanguages.hasOwnProperty(Segment[0].toLowerCase()))
+//            document.title = TMLanguages[Segment[0].toString().toLowerCase()]['title'] + afterFix;
+//        else
+//            if (TMLanguages.hasOwnProperty(Segment[0].toLowerCase()))
+//                document.title = TMLanguages[Segment[0].toLowerCase()]['title'] + afterFix;
+//    }
+//    else if (Segment.length > 1)
+//        if (TMLanguages.hasOwnProperty(Segment[1].toLowerCase()))
+//            document.title = TMLanguages[Segment[1].toLowerCase()]['title'] + afterFix;//TMLanguages[Segment[1]]['title'];
+//};
+
 //$('#indexAdd').on('click', function () {
 //    $('#PartialCreateLoad').load('http://localhost:57920/CMS/Users/PartialCreate', function () {
 //        $.validator.unobtrusive.parseDynamicContent('#FormCreate input[name="Username"]');
