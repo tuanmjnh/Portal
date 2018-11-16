@@ -1,0 +1,134 @@
+﻿@model PagedList.IPagedList<dynamic>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Quản lý kênh thuê riêng";
+    ViewBag.ContentTitle = "Danh sách kênh thuê riêng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p class="pull-left">
+    <button onclick="window.location='@Url.Action("Create")'" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> @TM.Common.Language.addnew</button>
+</p>
+<div class="pull-right mb10 form-inline">
+    @Html.Partial("search")
+    <div class="pull-right">
+        <a href="@Url.Action("Index",new { export = "export"})" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+        @if (ViewBag.flag == 0)
+        {
+            <a href="javascript:;" class="btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"><i class="glyphicon glyphicon-refresh"></i></a>
+            if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+            {
+                <a href="javascript:;" class="btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"><i class="glyphicon glyphicon-remove"></i></a>
+            }
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+        else
+        {
+            <a href="javascript:;" class="btn btn-danger btn-flag btn-chk" data-toggle="tooltip" title="Xóa tất cả" style="display:none"><i class="glyphicon glyphicon-trash"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+    </div>
+</div>
+<div class="clearfix"></div>
+@if (Model == null || Model.Count < 1)
+{
+    <div class="alert alert-warning" role="alert">@TM.Common.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    @*<th class="tbl-index">STT</th>*@
+                    <th>
+                        @Html.ActionLink("Loại dịch vụ", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "group_asc" ? "group_desc" : "group_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Mã thanh toán", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "code_asc" ? "code_desc" : "code_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Mã tài khoản", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "account_asc" ? "account_desc" : "account_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Tên khách hàng", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th class="tbl-checkbox">
+                        <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @*@{int index = 0;}*@
+                @foreach (dynamic item in (IEnumerable<dynamic>)Model)
+                {
+                    //index += 1;
+                    <tr id="@item.id">
+                        @*<td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>*@
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@item.groupname</a>
+                        </td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@item.codekey</a>
+                        </td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@item.extras</a>
+                        </td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@item.title</a>
+                        </td>
+                        <td class="tbl-checkbox">
+                            <label><input type="checkbox" name="checkbox" value="@item.id" class="chkitem" /></label>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag
+                         }))
+    </div>
+}
+@section ScriptList {
+    @Html.Partial("ScriptList")
+<script>
+    $('.datepicker').datepicker({
+        format: 'mm/dd/yyyy',
+        startDate: '-3d'
+    });
+    </script>
+}

@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewBag.Title = "Hỗ trợ F-Secure";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>F-Secure</h2>
+@if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+{
+    <div class="col-md-12">
+        <a href="@Url.Action("Export")" class="btn btn-info"><i class="fa fa-download" aria-hidden="true"></i> Export F-Secure List</a>
+    </div>
+}
+<br /><br />
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Tra cứu tài khoản F-Secure</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group required">
+                <div class="col-md-12 asterisk">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        <input class="form-control text-box single-line" id="Searh-FSecure" name="Searh-FSecure" type="text" placeholder="Nhập Mã HD, Mã F-Secure, Số DĐ, Username, Account Internet, Mã MEN"
+                               data-val="true" data-val-required="Vui lòng nhập thông tin">
+                    </div>
+                    <span class="field-validation-valid text-danger" data-valmsg-for="Searh-FSecure" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+            <br class="clearfix" />
+            <div id="DisplayFSecureInformation" class="col-md-12"></div>
+        </div>
+        <div class="panel-footer">
+            <span class="label label-warning">Lưu ý dữ liệu cập nhật có độ trễ một ngày !</span>
+        </div>
+    </div>
+</div>
+@section ScriptList {
+    @Html.Partial("ScriptList")
+    <script>
+        AjaxLoaddingBounce();
+        //KA/17/09/05/011
+        function setDefault() {
+            $('#username').val('');
+            $('#password').val('');
+        };
+        function getFSecureInformation() {
+
+        };
+        $('#Searh-FSecure').on('blur', function () {
+            if ($('#Searh-FSecure').val() != '') {
+                $.get('@Url.Action("getFSecureInformation")', 'SearhString=' + $(this).val().replace('+',''), function (d) {
+                    var str = '';
+                    if (d.data != null) {
+                        str =
+                            '<br/><table class="table table-bordered table-hover">' +
+                            '<tr>' +
+                            '<th class="col-md-3">Thông tin</th>' +
+                            '<th>Giá trị</th>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td>Tài khoản</td>' +
+                            '<td>' + d.data.USERNAME + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td>Mật khẩu</td>' +
+                            '<td>' + d.data.PASSWORD + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td>Mã F-Secure</td>' +
+                            '<td>' + d.data.MA_FSECURE + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td>Tài khoản Internet</td>' +
+                            '<td>' + d.data.ACCOUNT + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td>Mã MEN</td>' +
+                            '<td>' + d.data.SO_MEN + '</td>' +
+                            '</tr>' +
+                            '</table>';
+                    } else if (d.danger) {
+                        setDefault();
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger, fixed: false });
+                    } else if (d.data == null) {
+                        setDefault();
+                        $('#TMAlert').TMAlert({ type: "danger", message: 'Không tìm thấy account', fixed: false });
+                    }
+                    $('#DisplayFSecureInformation').html(str);
+                })
+            } else {
+                setDefault();
+            }
+    })
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@model Portal.Models.item
+
+@{
+    ViewBag.Title = "Nhập số liệu";
+    ViewBag.ContentTitle = "Nhập số liệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("ImportIVAN", "ListCNTT", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nhập Số liệu IVAN</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="upload">Nhập tệp</label>
+                        <div class="col-md-9">
+                            <label for="upload" class="btn btn-success"><span class="glyphicon glyphicon-paperclip"></span></label>
+                            <input type="file" name="upload" id="upload" class="hidden" multiple />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="upload" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.addnew" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="clearfix"></div>
+<div class="col-md-12"><a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a></div>
+@section ScriptForm { @Html.Partial("ScriptForm")}

@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Báo cáo PTTB - BSS";
+    ViewBag.ContentTitle = "Báo cáo PTTB - BSS";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*@{
+        var a = "0906162246 Tổ 13, Phường Minh Khai, Thành Phố Bắc Kạn, Tỉnh Bắc Kạn";
+        var b = "1-Thôn Vi Lạp-Xã Nhạn Môn-Huyện Pác Nặm";
+        var c = "001-Thôn Vi Lạp-Xã Nhạn Môn-Huyện Pác Nặm";
+        var d = "(Tập Thể Chi Cục Thuế Ba Bể), Tiểu Khu 7, Thị Trấn Chợ Rã, Huyện Ba Bể, Tỉnh Bắc Kạn, Việt Nam";
+        var e = "SN 13, Tổ 8A, Phường Đức Xuân, Thành Phố Bắc Kạn, Tỉnh Bắc Kạn";
+        var f = "SN Tổ Phường Minh Khai-Thành Phố Bắc Kạn";
+        var rs = "";
+        var diachilap = "K3/16/10/05/009 BKNA00256189";
+    }
+    @{rs = System.Text.RegularExpressions.Regex.Replace(d.Trim().Replace(", Việt Nam", "").Replace("- ", "-").Replace(" -", "-"),
+                                        @"0[0-9]*, |0[0-9]* |[0-9]+-|SN [0-9]*, ", "");
+    }*@
+@*@System.Text.RegularExpressions.Regex.Replace(rs, @"SN\s+", "")*@
+
+@*@diachilap.Split(' ')[0].Split('/')[0]*@
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="col-md-8 row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Tải tệp theo tháng</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group required">
+                    @*<label class="control-label col-md-3" for="FileUpload">Hợp đồng cố định</label>*@
+                    <div class="col-md-12 asterisk">
+                        <input type="file" id="FileUpload" name="FileUpload" class="file-upload" multiple data-val="true"
+                               data-val-required="Vui lòng chọn file" data-rule-extension="xls" data-msg-extension="Định dạng tệp phải là xls." />
+                        <span class="field-validation-valid text-danger" data-valmsg-for="FileUpload" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" value="Tải tệp" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Thực hiện</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Tháng 1</label>
+                    <div class="col-md-8">
+                        <select id="time3" class="form-control" name="time3">
+                            @foreach (var item in (List<string>)ViewBag.directory)
+                            {
+                                <option value="@item">@Portal.Controllers.BaseController.getYearMonth(item)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="clearfix mb10"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Tháng 2</label>
+                    <div class="col-md-8">
+                        <select id="time4" class="form-control" name="time4">
+                            @foreach (var item in (List<string>)ViewBag.directory)
+                            {
+                                <option value="@item">@Portal.Controllers.BaseController.getYearMonth(item)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="clearfix mb10"></div>
+                <a id="PTTBBSSReport" href="#@Url.Action("PTTBBSSReport")" cla class="btn btn-primary">Xuất báo cáo</a>
+                <div class="clearfix mb10"></div>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label col-md-4">Tháng trước</label>
+                    <div class="col-md-8">
+                        <select id="time1" class="form-control" name="time1">
+                            @foreach (var item in (List<string>)ViewBag.directory)
+                            {
+                                <option value="@item">@Portal.Controllers.BaseController.getYearMonth(item)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="clearfix mb10"></div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Tháng sau</label>
+                    <div class="col-md-8">
+                        <select id="time2" class="form-control" name="time2">
+                            @foreach (var item in (List<string>)ViewBag.directory)
+                            {
+                                <option value="@item">@Portal.Controllers.BaseController.getYearMonth(item)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="clearfix mb10"></div>
+                <a id="PTTBBSSReportCatHuy" href="#@Url.Action("PTTBBSSReportCatHuy")" cla class="btn btn-primary">Xuất báo cáo cắt hủy</a>
+            </div>
+        </div>
+    </div>
+    <a href="@Url.Action("Example")" class="btn btn-primary">Report</a>
+    <a href="@Url.Action("ReportPack")" class="btn btn-primary">Gói tích hợp</a>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        $('#PTTBBSSReport').on('click', function (e) {
+            e.preventDefault();
+            window.location = $(this).attr('href').replace('#', '') + '?time3=' + $('#time3').val() + "&time4=" + $('#time4').val();
+        })
+        $('#PTTBBSSReportCatHuy').on('click', function (e) {
+            e.preventDefault();
+            window.location = $(this).attr('href').replace('#', '') + '?time1=' + $('#time1').val() + "&time2=" + $('#time2').val();
+        })
+    </script>
+}

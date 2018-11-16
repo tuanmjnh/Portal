@@ -1,0 +1,170 @@
+﻿@model Portal.Models.ManagerHD
+
+@{
+    ViewBag.Title = "Quản lý hợp đồng";
+    ViewBag.ContentTitle = "Nhập mới hợp đồng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("Create", "ManagerContract", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nhập thông tin</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="url">Đơn vị</label>
+                        <div class="col-md-9">
+                            <select name="url" class="form-control" @(Authentication.Auth.AuthUser.roles == Authentication.Roles.admin || Authentication.Auth.AuthUser.roles == Authentication.Roles.superadmin ? "" : "disabled")>
+                                @foreach (var item in (List<Portal.Models.group>)ViewBag.local)
+                                {
+                                    <option @(item.id.ToString() == Authentication.Auth.AuthUser.staff_id.ToString() ? "selected" : "") value="@item.id">@item.title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="contractID">Mã hợp đồng</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-file-code-o"></i></span>
+                                <input class="form-control text-box single-line" id="contractID" name="contractID" type="text" value="@Html.DisplayFor(m=>m.contractID)"
+                                       data-val="true" data-val-required="Vui lòng nhập mã hợp đồng">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="contractID" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="customerName">Tên khách hàng</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                                <input class="form-control text-box single-line" id="customerName" name="customerName" type="text" value="@Html.DisplayFor(m=>m.customerName)"
+                                       data-val="true" data-val-required="Vui lòng nhập tên khách hàng" disabled>
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="customerName" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="customerAddress">Địa chỉ</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-address-book"></i></span>
+                                <input class="form-control text-box single-line" id="customerAddress" name="customerAddress" type="text" value="@Html.DisplayFor(m=>m.customerAddress)"
+                                       data-val="true" data-val-required="Vui lòng nhập tên khách hàng" disabled>
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="customerAddress" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="customerPhone">Điện thoại</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                <input class="form-control text-box single-line" id="customerPhone" name="customerPhone" type="text" value="@Html.DisplayFor(m=>m.customerPhone)" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="accounts">Accounts</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-columns"></i></span>
+                                <input class="form-control text-box single-line" id="accounts" name="accounts" type="text" value="@Html.DisplayFor(m=>m.accounts)" disabled>
+                                <span class="input-group-addon accountNumber">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="upload">Bản mềm</label>
+                        <div class="col-md-9">
+                            @*<label for="upload" class="btn btn-success"><span class="glyphicon glyphicon-paperclip"></span></label>*@
+                            <input type="file" name="upload" id="upload" class="file-upload" data-val="true"
+                                   data-val-required="Vui lòng chọn file" />
+                            <span class="field-validation-valid text-danger" data-valmsg-for="upload" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="desc" name="desc" class="tinymce">@(Model != null ? Html.Raw(Model.details) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                @*<div class="panel-body">
+                        <div class="form-group option-label">
+                            <label class="col-md-3" for="flag">Trạng thái</label>
+                            <div class="checkbox">
+                                <label><input type="radio" name="flag" value="1" @(Model != null ? (Model.flag == 1 ? "checked" : "") : "checked") /> @TM.Common.Language.active</label>
+                                <label><input type="radio" name="flag" value="0" @(Model != null && Model.flag == 0 ? "checked" : "") /> @TM.Common.Language.draft</label>
+                            </div>
+                        </div>
+                    </div>*@
+                <div class="panel-body">
+                    <input id="btnSubmit" type="submit" value="@TM.Common.Language.addnew" class="btn btn-primary" style="display:none" />
+                    <a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        AjaxLoaddingBounce();
+        //KA/17/09/05/011
+        function setDefault() {
+            $('#customerName').val('');
+            $('#customerAddress').val('');
+        }
+        $('#contractID').on('blur', function () {
+            if ($('#contractID').val() != '') {
+                $.get('@Url.Action("getDataHD")', 'so_hd=' + $(this).val(), function (d) {
+                    console.log(d);
+                    $('#btnSubmit').hide();
+                    if (d.data && d.data.length>0) {
+                        $('#customerName').val(d.data[0].TEN_TB);
+                        $('#customerAddress').val(d.data[0].DIACHI_TB);
+                        $('#customerPhone').val(d.data[0].DIENTHOAI_LH);
+                        var accounts = '';
+                        for (var i = 0; i < d.data.length; i++)
+                            accounts += d.data[i].MA_TB + ', ';
+                        accounts = accounts.substr(0, accounts.length - 2);
+                        $('#accounts').val(accounts);
+                        $('.accountNumber').html(d.data.length);
+                        $('#btnSubmit').show();
+                    } else if (d.danger) {
+                        setDefault();
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger, fixed: false });
+                    } else if (d.data == null) {
+                        setDefault();
+                        $('#TMAlert').TMAlert({ type: "danger", message: 'Không tìm thấy hợp đồng', fixed: false });
+                    }
+                })
+            } else {
+                setDefault();
+            }
+    })
+    </script>
+}

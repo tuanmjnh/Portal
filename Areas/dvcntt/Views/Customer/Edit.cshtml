@@ -1,0 +1,239 @@
+﻿@model Portal.Models.Customer
+
+@{
+    ViewBag.Title = "Quản lý khách hàng - DVCNTT";
+    ViewBag.ContentTitle = "Cập nhật khách hàng - DVCNTT";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var author = ""; var authorRole = "";
+    var mobile = ""; var phone = "";
+    if (Model != null)
+    {
+        var tmp = Model.author.Trim(',').Split(',');
+        if (tmp.Length > 1)
+        {
+            author = tmp[0];
+            authorRole = tmp[1];
+        }
+        tmp = Model.phone.Trim(',').Split(',');
+        if (tmp.Length > 1)
+        {
+            mobile = tmp[0];
+            phone = tmp[1];
+        }
+    }
+}
+
+@using (Html.BeginForm("Edit", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-horizontal">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nhập thông tin khách hàng</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="name">Tên đơn vị</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-building" aria-hidden="true"></i></span>
+                                <input class="form-control text-box single-line" id="name" name="name" type="text" value="@Html.DisplayFor(m=>m.name)"
+                                       data-val="true" data-val-required="Vui lòng nhập tên đơn vị">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="name" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="author">Người đại diện</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user-circle"></i></span>
+                                <input class="form-control text-box single-line" id="author" name="author" type="text" value="@author"
+                                       data-val="true" data-val-required="Vui lòng nhập người đại diện">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="author" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="authorRole">Chức vụ người đại diện</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-id-card" aria-hidden="true"></i></span>
+                                <input class="form-control text-box single-line" id="authorRole" name="authorRole" type="text" value="@authorRole"
+                                       data-val="true" data-val-required="Vui lòng nhập chức vụ người đại diện">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="authorRole" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="code">Mã số thuế</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
+                                <input class="form-control text-box single-line" id="code" name="code" type="number" value="@Html.DisplayFor(m=>m.code)"
+                                       data-val="true" data-val-required="Vui lòng nhập mã số thuế">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="code" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="mobile">Số điện thoại</label>
+                        <div class="col-md-4 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-phone" aria-hidden="true"></i></span>
+                                <input class="form-control text-box single-line" id="mobile" name="mobile" type="number" value="@mobile"
+                                       data-val="true" data-val-required="Vui lòng nhập số di động" data-val-number="Số di động phải là số">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="mobile" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="col-md-4 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-mobile" aria-hidden="true"></i></span>
+                                <input class="form-control text-box single-line" id="phone" name="phone" type="number" value="@phone"
+                                       data-val="true" data-val-number="Số cố định phải là số">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="phone" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="email">Email</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-envelope-o" aria-hidden="true"></i></span>
+                                <input class="form-control text-box single-line" id="email" name="email" type="text" value="@Html.DisplayFor(m=>m.email)"
+                                       data-val="true" data-val-required="Vui lòng nhập tài khoản" data-val-email="Sai định dạng email">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="email" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="address">Địa chỉ</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-address-book-o"></i></span>
+                                <input class="form-control text-box single-line" id="address" name="address" type="text" value="@Html.DisplayFor(m=>m.address)"
+                                       data-val="true" data-val-required="Vui lòng nhập địa chỉ">
+                            </div>
+                            <span class="field-validation-valid text-danger" data-valmsg-for="address" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Danh sách dịch vụ</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <span id="AddCA" class="btn btn-primary">Đăng ký - Gia hạn CA</span>
+                            <span id="AddIVAN" class="btn btn-success">Đăng ký - Gia hạn IVAN</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Model.DVCNTTs
+                            @foreach (var item in (IList<Portal.Models.DVCNTT>)Model.DVCNTTs)
+                            {
+                                @item
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="details" name="details" class="tinymce">@(Model != null ? Html.Raw(Model.details) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.createdBy)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.createdAt.HasValue ? Model.createdAt.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.updatedBy)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updatedAt.HasValue ? Model.updatedAt.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model != null ? (Model.flag == 1 ? "checked" : "") : "checked") /> @TM.Common.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model != null && Model.flag == 0 ? "checked" : "") /> @TM.Common.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.update" class="btn btn-primary" />
+                    <a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div id="PartialView"></div>
+@section ScriptForm {
+    @Html.Partial("ScriptForm")
+    <script>
+        var modal = '.modal';
+        var PartialView = '#PartialView';
+        var IVANCreate = '#IVANCreate';
+        $('#AddCA').on('click', function () {
+            $.get('@Url.Action("PartialCreate", "CA")', function (d) {
+                $(PartialView).html(d);
+            }).done(function () {
+                var thisModal = $(PartialView).find(IVANCreate + ' ' + modal);
+                thisModal.modal('show');
+
+                $(thisModal).on('hidden.bs.modal', function (e) {
+                    $(IVANCreate).remove();
+                })
+            })
+        });
+        $('#AddIVAN').on('click', function () {
+            $.get('@Url.Action("PartialCreate", "IVAN")', function (d) {
+                $(PartialView).html(d);
+            }).done(function () {
+                var thisModal = $(PartialView).find(IVANCreate + ' ' + modal);
+                console.log(thisModal);
+                thisModal.modal('show');
+                //
+                thisModal
+                    .append($('[name="__RequestVerificationToken"]')[0].outerHTML)
+                    .find('[name="customerID"]').val('@Model.id');
+                //
+                $(thisModal).on('hidden.bs.modal', function (e) {
+                    $(IVANCreate).remove();
+                })
+            })
+        });
+    </script>
+}

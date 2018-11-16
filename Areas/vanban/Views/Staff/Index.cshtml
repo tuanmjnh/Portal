@@ -1,0 +1,195 @@
+﻿@model PagedList.IPagedList<Portal.Models.item>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Quản lý bàn giao văn bản";
+    ViewBag.ContentTitle = "Danh sách bàn giao văn bản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p class="pull-left">
+    <button onclick="window.location='@Url.Action("Create")'" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> @TM.Common.Language.addnew</button>
+</p>
+<div class="pull-right mb10 form-inline">
+    @Html.Partial("search")
+    <div class="pull-right">
+        <a href="@Url.Action("Index",new { export = "export"})" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+        @if (ViewBag.flag == 0)
+        {
+            <a href="javascript:;" class="btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"><i class="glyphicon glyphicon-refresh"></i></a>
+            if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+            {
+                <a href="javascript:;" class="glyphicon glyphicon-remove btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"></a>
+            }
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+        else
+        {
+            <a href="javascript:;" class="btn btn-danger btn-flag btn-chk" data-toggle="tooltip" title="Xóa tất cả" style="display:none"><i class="glyphicon glyphicon-trash"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 1 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, flag = 0 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+    </div>
+</div>
+<div class="clearfix"></div>
+@if (Model == null || Model.Count < 1)
+{
+    <div class="alert alert-warning" role="alert">@TM.Common.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    <th class="tbl-index">STT</th>
+                    <th>
+                        @Html.ActionLink("Mã văn bản", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "code_asc" ? "code_desc" : "code_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Tiêu đề văn bản", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "title_asc" ? "title_desc" : "title_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Ngày bắt đầu", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "started_asc" ? "started_desc" : "started_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Ngày kết thúc", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "ended_asc" ? "ended_desc" : "ended_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th class="col-md-4">
+                        @Html.ActionLink("Nhân viên", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "user_asc" ? "user_asc_desc" : "user_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                   })
+                    </th>
+                    <th>Trạng thái</th>
+                    <th class="tbl-checkbox">
+                        <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int index = 0;}
+                @foreach (var item in Model)
+                {
+                    index += 1;
+                    <tr id="@item.id">
+                        <td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@item.code_key</a>
+                        </td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@item.title</a>
+                        </td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@(item.started_at.HasValue ? item.started_at.Value.ToString("dd/MM/yyyy") : TM.Common.Language.emptyvl)</a>
+                        </td>
+                        <td class="link-action">
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@(item.ended_at.HasValue ? item.ended_at.Value.ToString("dd/MM/yyyy") : TM.Common.Language.emptyvl)</a>
+                        </td>
+                        <td class="link-action">
+                            @{
+                                var user = "";
+                                var userList = item.extras.Trim(',').Split(',');
+                                foreach (var u in userList)
+                                {
+                                    user += Portal.Controllers.BaseController.GetUser(u) + ", ";
+                                }
+                            }
+                            <a href="@Url.Action("Edit/"+item.id,"ktr",new { area="dvcntt"})">@user.Trim(new[] { ' ', ',' })</a>
+                        </td>
+                        <td id="statusAccept">
+
+                            @if (item.quantity == 1)
+                            {
+                                if (item.images.Contains("," + item.id + ","))
+                                {
+                                    <span class="label label-success">Đang xử lý</span>
+                                }
+                                else
+                                {
+                                    <button id="accept" class="btn btn-warning btn-xs">Xác nhận</button>
+                                }
+                            }
+                            else if (item.quantity == 2)
+                            {
+                                <span class="label label-success">Đã xử lý</span>
+                            }
+                            else
+                            {
+                                @*<span class="label label-warning">Chờ xử lý</span>*@
+                                <button id="accept" class="btn btn-warning btn-xs">Xác nhận</button>
+                            }
+                        </td>
+                        <td class="tbl-checkbox">
+                            <label><input type="checkbox" name="checkbox" value="@item.id" class="chkitem" /></label>
+                        </td>
+                    </tr>
+                                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag
+                         }))
+    </div>
+                                }
+@section ScriptList {
+    @Html.Partial("ScriptList")
+    <script>
+        $(document).Notification({
+            icon: '@(TM.Url.BaseUrl+"/"+TM.Common.Directories.images)vnpt.png',
+            url: '@Url.Action("LoadNotification", "Staff", new { area = "vanban" })',
+            data: { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+        });
+        $(document).NotificationInterval({
+            icon: '@(TM.Url.BaseUrl+"/"+TM.Common.Directories.images)vnpt.png',
+            url: '@Url.Action("LoadNotification", "Staff", new { area = "vanban" })',
+            data: { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+            interval: 60000
+        });
+        $('#accept').on('click', function () {
+            $.post('@Url.Action("Accept")', { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(), 'id': $(this).parents('tr').attr('id') },
+                function (d) {
+                    if (d.success) {
+                        $('#statusAccept').html('<span class="label label-success">Đã xử lý</span>');
+                        console.log($('#statusAccept').html())
+                        $('#TMAlert').TMAlert({ message: d.success });
+                    }
+                })
+        })
+    </script>
+}

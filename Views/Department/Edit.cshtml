@@ -1,0 +1,117 @@
+﻿@model Portal.Models.group
+
+@{
+    ViewBag.Title = "Quản lý phòng ban";
+    ViewBag.ContentTitle = "Cập nhật phòng ban";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.id)
+    <div class="form-horizontal support-input">
+        <hr />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Cập nhật thông tin</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="level">Mã ID</label>
+                        <div class="col-md-3 asterisk">
+                            <input class="form-control text-box single-line" id="level" name="level" type="number" value="@Html.DisplayFor(m=>m.level)"
+                                   data-val="true" data-val-required="Vui lòng nhập sắp xếp" data-val-number="Sắp xếp phải là số">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="level" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="id_key">Mã phòng ban</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="id_key" name="id_key" type="text" value="@Html.DisplayFor(m=>m.id_key)"
+                                   data-val="true" data-val-required="Vui lòng nhập mã phòng ban">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="id_key" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="title">Tên phòng ban</label>
+                        <div class="col-md-9 asterisk">
+                            <input class="form-control text-box single-line" id="title" name="title" type="text" value="@Html.DisplayFor(m=>m.title)"
+                                   data-val="true" data-val-required="Vui lòng nhập tên phòng ban">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="title" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="orders">Sắp xếp</label>
+                        <div class="col-md-3 asterisk">
+                            <input class="form-control text-box single-line" id="orders" name="orders" type="number" value="@(Model!=null?Model.orders:0)"
+                                   data-val="true" data-val-required="Vui lòng nhập sắp xếp" data-val-number="Sắp xếp phải là số">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="orders" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="control-label setting-label col-md-3" for="extras">Thêm</label>
+                        <div class="col-md-9">
+                            <input class="form-control text-box single-line" id="extras" name="extras" type="text" value="@Html.DisplayFor(m=>m.extras)">
+                            @*<span class="field-validation-valid text-danger" data-valmsg-for="extras" data-valmsg-replace="true"></span>*@
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("PanelFooterNotes")
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ghi chú</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="desc" name="desc" class="tinymce">@(Model != null ? Html.Raw(Model.desc) : null)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Thực hiện</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người lập</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.created_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày lập</label>
+                        <label class="col-md-9">@(Model.created_at.HasValue ? Model.created_at.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Người sửa</label>
+                        <label class="col-md-9">@Portal.Controllers.BaseController.GetUser(Model.updated_by)</label>
+                    </div>
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="customer_id">Ngày sửa</label>
+                        <label class="col-md-9">@(Model.updated_at.HasValue ? Model.updated_at.Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</label>
+                    </div>
+                    <hr />
+                    <div class="form-group option-label">
+                        <label class="col-md-3" for="flag">Trạng thái</label>
+                        <div class="checkbox">
+                            <label><input type="radio" name="flag" value="1" @(Model.flag == 1 ? "checked" : "") /> @TM.Common.Language.active</label>
+                            <label><input type="radio" name="flag" value="0" @(Model.flag == 0 ? "checked" : "") /> @TM.Common.Language.draft</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" value="@TM.Common.Language.update" class="btn btn-primary" />
+                    <a href="@Url.Action("Index")" class="btn btn-info">@TM.Common.Language.backlink</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptForm { @Html.Partial("ScriptForm")}

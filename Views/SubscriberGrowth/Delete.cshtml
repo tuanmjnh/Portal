@@ -1,0 +1,137 @@
+﻿@model Portal.Models.subscriber_growth
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>subscriber_growth</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.contract_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.contract_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.services_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.services_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.account)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.account)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.technician)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.technician)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.collaborator)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.collaborator)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.package)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.package)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.customer_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.customer_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.customer_address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.customer_address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.created_by)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.created_by)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.created_at)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.created_at)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.updated_by)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.updated_by)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.updated_at)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.updated_at)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.flag)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.flag)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

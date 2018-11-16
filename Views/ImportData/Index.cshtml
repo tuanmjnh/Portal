@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewBag.Title = "Nhập dữ liệu";
+    ViewBag.ContentTitle = "Nhập dữ liệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#tab1">Cán bộ thu</a></li>
+    <li><a data-toggle="tab" href="#tab2">Nhập hóa đơn</a></li>
+    <li><a data-toggle="tab" href="#tab3">Dữ liệu (.dbf)</a></li>
+</ul>
+<div class="tab-content">
+    <div id="tab1" class="tab-pane fade in active">
+        <h3>Cán bộ thu</h3>
+        <div class="form-group">
+            @Html.ActionLink("Collected Staff", "CollectedStaff", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Collected Staff 2", "CollectedStaff2", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("GetNotIn", "GetNotIn", null, new { @class = "btn btn-primary" })
+        </div>
+    </div>
+
+    <div id="tab2" class="tab-pane fade">
+        <h3>Dữ liệu hàng tháng</h3>
+        @using (Html.BeginForm("HDData", "ImportData"))
+        {
+            @Html.AntiForgeryToken()
+            <div class="list-file col-md-3">
+                @foreach (var item in ViewBag.directory)
+                {
+                    <div class="checkbox">
+                        <label class="list-file-item" for="@item"><input type="checkbox" id="@item" name="hdfile" value="@item" />Hóa đơn @item</label>
+                    </div>
+                }
+            </div>
+            <div class="col-md9">
+                <input type="submit" value="Nhập dữ liệu" />
+            </div>
+        }
+    </div>
+
+    <div id="tab3" class="tab-pane fade">
+        <h3>Dữ liệu (.dbf)</h3>
+        <div class="form-group">
+
+        </div>
+    </div>
+</div>

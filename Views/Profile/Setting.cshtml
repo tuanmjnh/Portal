@@ -1,0 +1,60 @@
+﻿@model Portal.Models.setting
+@{
+    ViewBag.Title = "Cập nhật thông tin";
+    ViewBag.ContentTitle = "Cập nhật thông tin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal support-input">
+        <hr />
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+        <input type="hidden" id="id" name="id" value="@Html.DisplayFor(model=> model.id)" />
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Cài đặt tài khoản</h3>
+                </div>
+                <div class="panel-body label-center">
+                    <div class="form-group">
+                        <label class="control-label col-md-3" for="full_name">Hiển thị nhãn Form</label>
+                        <div class="col-md-9 asterisk">
+                            <div class="checkbox">
+                                <label>
+                                    @{
+                                        var yes = Portal.Controllers.BaseController.Value(Authentication.Auth.AuthUser.id.ToString(), TM.Common.Config.sub_key.form_use_label);
+                                    }
+                                    <input type="radio" name="@TM.Common.Config.sub_key.form_use_label" value="@TM.Common.Config.value.yes"
+                                           @(yes == null ? "checked" : (yes == TM.Common.Config.value.yes.ToString() ? "checked" : "")) /> @TM.Common.Language.active
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="@TM.Common.Config.sub_key.form_use_label" value="@TM.Common.Config.value.no"
+                                               @(yes == TM.Common.Config.value.no.ToString() ? "checked" : "") /> @TM.Common.Language.deactive
+                                        </label>
+                                    </div>
+                                    @*<span class="field-validation-valid text-danger" data-valmsg-for="flag" data-valmsg-replace="true"></span>*@
+                                </div>
+                            </div>
+                        </div>
+                        @Html.Partial("PanelFooterNotes")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Thực hiện</h3>
+                        </div>
+                        <div class="panel-body">
+                            <input type="submit" value="@TM.Common.Language.update" class="btn btn-primary" />
+                            @Html.ActionLink(TM.Common.Language.backlink, "../", null, new { @class = "btn btn-info" })
+                            @*@Html.ActionLink(TM.Common.Language.backlink, "Index", null, new { @class = "btn btn-info" })*@
+
+                            @*<input type="submit" value="@TM.Common.Language.update" class="btn btn-default" />*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                        }
+@section ScriptForm { @Html.Partial("ScriptForm")}

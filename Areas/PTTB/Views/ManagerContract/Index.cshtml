@@ -1,0 +1,319 @@
+﻿@model PagedList.IPagedList<dynamic>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Quản lý hợp đồng";
+    ViewBag.ContentTitle = "Danh sách hợp đồng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p class="pull-left">
+    <button onclick="window.location='@Url.Action("Create")'" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> @TM.Common.Language.addnew</button>
+</p>
+<div class="pull-right mb10 form-inline">
+    @Html.Partial("search")
+    <div class="pull-right">
+        <span class="btn btn-success btnRequestUpdate"><i class="fa fa-envelope-open-o" aria-hidden="true"></i><span class="badge" id="RequestUpdateCount" style="margin-left:5px;font-size:10px;display:inline-block">@ViewBag.RequestUpdate</span></span>
+        <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, localID=ViewBag.localID, flag =ViewBag.flag, export = "export"})" class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"></i></a>
+        @if (ViewBag.flag == 0)
+        {
+            <a href="javascript:;" class="btn btn-info btn-flag btn-chk" data-toggle="tooltip" title="Khôi phục tất cả" style="display:none"><i class="glyphicon glyphicon-refresh"></i></a>
+            if (Authentication.Auth.isAuth && Authentication.Auth.inRoles(new string[] { Authentication.Roles.admin, Authentication.Roles.superadmin }))
+            {
+                <a href="javascript:;" class="btn btn-danger btn-trash btn-chk" data-toggle="tooltip" title="Xóa vĩnh viễn" style="display:none"><i class="glyphicon glyphicon-remove"></i></a>
+            }
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter,localID=ViewBag.localID, flag = 1 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter,localID=ViewBag.localID, flag = 0 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+        else
+        {
+            <a href="javascript:;" class="btn btn-danger btn-flag btn-chk" data-toggle="tooltip" title="Xóa tất cả" style="display:none"><i class="glyphicon glyphicon-trash"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, localID=ViewBag.localID, flag = 1 })" class="btn btn-default active" data-toggle="tooltip" title="Hiển thị sử dụng"><i class="glyphicon glyphicon-th-list"></i></a>
+            <a href="@Url.Action("Index",new { datetime = ViewBag.datetime, datetimeType = ViewBag.datetimeType, order = ViewBag.order, searchString = ViewBag.currentFilter, localID=ViewBag.localID, flag = 0 })" class="btn btn-default" data-toggle="tooltip" title="Hiển thị nháp"><i class="glyphicon glyphicon-retweet"></i></a>
+        }
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<div class="pull-left">
+    <select id="localList" class="form-control">
+        <option value="0">-- Tất cả --</option>
+        @foreach (var item in (List<Portal.Models.group>)ViewBag.localList)
+        {
+            <option value="@item.level" @(ViewBag.localID == item.level ? "selected" : "")>@item.title</option>
+        }
+    </select>
+</div>
+<div class="pull-right mb10">
+    @{
+        var datetime = ViewBag.datetime != null ? ((string)ViewBag.datetime).Split('-') : new string[0];
+    }
+    <form id="frmSearchDatetime" method="get" action="" class="form-inline">
+        <div class="input-group date startDate">
+            <input type="text" class="form-control" id="started_at" name="started_at" autocomplete="off" placeholder="Nhập ngày bắt đầu" data-toggle="tooltip" data-placement="bottom" title="Nhập ngày bắt đầu" value="@(datetime.Length>0?datetime[0]:"")" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        <div class="input-group date endDate end_at">
+            <input type="text" class="form-control" id="ended_at" name="ended_at" autocomplete="off" placeholder="Nhập ngày kết thúc" data-toggle="tooltip" data-placement="bottom" title="Nhập ngày kết thúc" value="@(datetime.Length>1?datetime[1]:"")" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        <a id="SearchDatetime" href="javascript:;" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></a>
+        <div class="btn-group datetimeType" data-toggle="buttons">
+            <label data-val="0" class="btn btn-warning @(ViewBag.datetimeType != null ? (ViewBag.datetimeType == 0 ? "active" : "") : "active")">
+                <input type="radio" name="datetimeType" value="0" autocomplete="off"> Ngày tạo
+            </label>
+            <label data-val="1" class="btn btn-warning @(ViewBag.datetimeType != null ? (ViewBag.datetimeType == 1 ? "active" : "") : "")">
+                <input type="radio" name="datetimeType" value="1" autocomplete="off"> Ngày sửa
+            </label>
+        </div>
+    </form>
+</div>
+<div class="clearfix"></div>
+@if (Model == null || Model.Count < 1)
+{
+    <div class="alert alert-warning" role="alert">@TM.Common.Language.emptydb</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-head">
+            <thead>
+                <tr>
+                    @*<th class="tbl-index">STT</th>*@
+                    <th>
+                        @Html.ActionLink("Mã hợp đồng", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "contract_asc" ? "contract_desc" : "contract_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                       datetime = ViewBag.datetime,
+                       datetimeType = ViewBag.datetimeType,
+                       localID = ViewBag.localID,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Tên khách hàng", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "name_asc" ? "name_desc" : "name_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                       datetime = ViewBag.datetime,
+                       datetimeType = ViewBag.datetimeType,
+                       localID = ViewBag.localID,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Đơn vị", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "local_asc" ? "local_desc" : "local_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                       datetime = ViewBag.datetime,
+                       datetimeType = ViewBag.datetimeType,
+                       localID = ViewBag.localID,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Người tạo", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "createdBy_asc" ? "createdBy_desc" : "createdBy_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                       datetime = ViewBag.datetime,
+                       datetimeType = ViewBag.datetimeType,
+                       localID = ViewBag.localID,
+                   })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Ngày tạo", "Index",
+                   new
+                   {
+                       order = TM.Url.getQueryString("order") != null && TM.Url.getQueryString("order") == "created_asc" ? "created_desc" : "created_asc",
+                       currentFilter = ViewBag.currentFilter,
+                       flag = ViewBag.flag,
+                       datetime = ViewBag.datetime,
+                       datetimeType = ViewBag.datetimeType,
+                       localID = ViewBag.localID,
+                   })
+                    </th>
+                    <th class="tbl-checkbox"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></th>
+                    <th class="tbl-checkbox">
+                        <label><input type="checkbox" name="checkboxs" value="all" class="chkall" /></label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @*@{int index = 0;}*@
+                @foreach (dynamic item in (IEnumerable<dynamic>)Model)
+                {
+                    //index += 1;
+                    <tr id="@item.id">
+                        @*<td class="center">@(index + (Model.PageNumber - 1) * Model.PageSize)</td>*@
+                        <td>
+                            <a href="@Url.Action("Edit/"+item.id)">@item.contractID</a>
+                        </td>
+                        <td>@item.customerName</td>
+                        <td>@item.localName</td>
+                        <td>@item.createdBy</td>
+                        <td>@(((DateTime?)item.createdAt).HasValue ? ((DateTime?)item.createdAt).Value.ToString("dd/MM/yyyy hh:mm") : TM.Common.Language.emptyvl)</td>
+                        <td class="center"><a target="_blank" href="@TM.Url.BaseUrl/@item.attach"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a></td>
+                        <td class="tbl-checkbox">
+                            <label><input type="checkbox" name="checkbox" value="@item.id" class="chkitem" /></label>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination-list">
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) của @Model.PageCount trong tổng số (@ViewBag.TotalRecords bản ghi)
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+                         new
+                         {
+                             page,
+                             order = ViewBag.order,
+                             currentFilter = ViewBag.currentFilter,
+                             flag = ViewBag.flag,
+                             datetime = ViewBag.datetime,
+                             datetimeType = ViewBag.datetimeType,
+                             localID = ViewBag.localID
+                         }))
+    </div>
+    <!-- Modal -->
+    <div class="modal" id="RequestUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="RequestUpdateModalLabel">Danh sách yêu cầu thay đổi</h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Quay lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section ScriptList {
+    @Html.Partial("ScriptList")
+    <script>
+        $('#localList').on("change", function () {
+            console.log($(this).val());
+            var url = "@(Html.Raw(Url.Action("Index", new
+                       {
+                           order = ViewBag.order,
+                           flag = ViewBag.flag,
+                           currentFilter = ViewBag.currentFilter,
+                           dir = ViewBag.dir
+                       })))";
+            window.location = (url.indexOf("?") > 0 ? url : "?") + "&localID=" + $(this).val();
+        });
+        $('.btnRequestUpdate').on('click', function () {
+            $('#RequestUpdateModal').modal('show');
+            $.get('@Url.Action("RequestUpdate")', function (d) {
+                if (d.data) {
+                    var html = '@Html.AntiForgeryToken()\
+                        <table class="table table-bordered table-responsive table-hover">\
+                        <thead>\
+                            <tr>\
+                                <th>Mã hợp đồng</th>\
+                                <th>Ghi chú</th>\
+                                <th>Thông tin xác nhận</th>\
+                                <th class="col-md-1 center"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></th>';
+                    if(d.flag)
+                        html += '<th class="col-md-1 center">#</th><th class="col-md-1 center">#</th>';
+                    else
+                        html += '<th class="col-md-1 center">#</th>';
+                    html += '</tr></thead><tbody>';
+                    for (var i = 0; i < d.data.length; i++) {
+                        html += '<tr data-val="' + d.data[i].id + '">\
+                                    <td>'+ d.data[i].contractID + '</td>\
+                                    <td>'+ d.data[i].details + '</td>\
+                                    <th><input type="text" class="form-control cfmNotes"/></th>\
+                                    <td class="center"><a target="_blank" href="@TM.Url.BaseUrl\\'+ d.data[i].attach + '"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a></td>';
+                        if (d.flag)
+                        html += '<td class="center"><span class="btn btn-success btnAccept"><i class="fa fa-check-square-o" aria-hidden="true"></i></span></td>\
+                                <td class="center"><span class="btn btn-danger btnReject"><i class="fa fa-times-circle" aria-hidden="true"></i></span></td>';
+                        else
+                            html += '<td class="center"><label class="label label-warning">Đang yêu cầu</label></td>';
+                        html +='</tr>';
+                    }
+                    html += '</tbody></table>';
+                    $('#RequestUpdateModal .modal-body').html(html);
+                }
+                //if (d.success)
+                //    $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                if (d.danger)
+                    $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+            });
+        });
+        var modal = '<div class="modal" id="msgConfirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="false" data-keyboard="false">\
+                      <div class="modal-dialog" role="document">\
+                        <div class="modal-content">\
+                          <div class="modal-header">\
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+                            <h4 class="modal-title">Thông báo</h4>\
+                          </div>\
+                          <div class="modal-body">Bạn có chắc chắn muốn thực hiện?</div>\
+                          <div class="modal-footer">\
+                            <button type="button" class="btn btn-primary btnTrueAction" data-dismiss="modal">Xác Nhận</button>\
+                            <button type="button" class="btn btn-default btnFalseAction" data-dismiss="modal">Hủy</button>\
+                          </div>\
+                        </div>\
+                      </div>\
+                    </div>';
+        $(document).on('click', '.btnAccept', function () {
+            var $this = $(this);
+            var parents = $this.parents('tr');
+            var cfmNotes = parents.find('.cfmNotes').val();
+            $('body').append(modal);
+            var msgConfirmModal = $(document).find('#msgConfirmModal');
+            msgConfirmModal.modal('show');
+            msgConfirmModal.find('.btnTrueAction').on('click', function () {
+                if (cfmNotes)
+                    $.post('@Url.Action("RequestUpdateAccept")', { '__RequestVerificationToken': $('[name="__RequestVerificationToken"]').val(), 'id': parents.attr('data-val'), 'cfmNotes': cfmNotes }, function (d) {
+                        if (d.data != null || d.data !== undefined)
+                            $('#RequestUpdateCount').html(d.data);
+                        if (d.success) {
+                            $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                            parents.fadeOut();
+                        }
+                        if (d.danger)
+                            $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                    });
+                else
+                    $('#TMAlert').TMAlert({ type: "danger", message:'Vui lòng nhập thông tin xác nhận!' });
+            });
+        });
+        $(document).on('click', '.btnReject', function () {
+            var $this = $(this);
+            var parents = $this.parents('tr');
+            var cfmNotes = parents.find('.cfmNotes').val();
+            $('body').append(modal);
+            var msgConfirmModal = $(document).find('#msgConfirmModal');
+            msgConfirmModal.modal('show');
+            msgConfirmModal.find('.btnTrueAction').on('click', function () {
+                if (cfmNotes)
+                    $.post('@Url.Action("RequestUpdateReject")', { '__RequestVerificationToken': $('[name="__RequestVerificationToken"]').val(), 'id': parents.attr('data-val'), 'cfmNotes': cfmNotes }, function (d) {
+                        if (d.data != null || d.data !== undefined)
+                            $('#RequestUpdateCount').html(d.data);
+                        if (d.success) {
+                            $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                            parents.fadeOut();
+                        }
+                        if (d.danger)
+                            $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                    });
+                else
+                    $('#TMAlert').TMAlert({ type: "danger", message:'Vui lòng nhập thông tin xác nhận!' });
+            });
+        });
+        $(document).on('hidden.bs.modal', '#msgConfirmModal', function (e) {
+            $(this).remove();
+        });
+    </script>
+}

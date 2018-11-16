@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewBag.Title = "Import ND49";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Import ND49</h2>
+<form action="" met method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">Nhập dữ liệu Text</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <textarea rows="10" class="form-control" name="txtDataVal" data-val="true" data-val-required="Vui lòng nhập giá trị"></textarea>
+                <span class="field-validation-valid text-danger" data-valmsg-for="txtDataVal" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <div class="panel-body">
+            <a href="javascript:;" data-url="@Url.Action("XuLyNhapTextData")" class="btn btn-primary btnAction" dataId="1" data-toggle="tooltip" data-placement="bottom" title="Nhập thêm và giữ lại dữ liệu cũ">Nhập thêm</a>
+            <a href="javascript:;" data-url="@Url.Action("XuLyNhapTextData")" class="btn btn-warning btnAction" dataId="2" data-toggle="tooltip" data-placement="bottom" title="Xóa dữ liệu cũ và nhập dữ liệu mới">Làm mới & Nhập</a>
+        </div>
+    </div>
+</form>
+@section scripts {
+    <script>
+        AjaxLoaddingBounce();
+        function ActionLink(obj) {
+            var formdata = new FormData($('form')[0]);
+            for (var i in obj.data)
+                formdata.append(i, obj.data[i]);
+            //obj.data = $.extend({}, { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() }, obj.data);
+            $.ajax({
+                url: obj.url,
+                type: 'POST',
+                dataType: 'json',
+                data: formdata,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (d) {
+                    if (d.success) {
+                        $('#TMAlert').TMAlert({ type: "success", message: d.success });
+                        $("form")[0].reset();
+                    }
+                    if (d.danger)
+                        $('#TMAlert').TMAlert({ type: "danger", message: d.danger });
+                    if (d.warning)
+                        $('#TMAlert').TMAlert({ type: "warning", message: d.warning });
+                    if (d.url)
+                        window.location = d.url;
+                    $('#FileUpload').val('');
+                    $('.lblUpload').html('');
+                },
+                error: function (xhr, error, status) {
+                    $('#TMAlert').TMAlert({ type: "danger", message: window.location.protocol + '//' + window.location.host + this.url + ' is ' + xhr.status + ' ' + xhr.statusText });
+                    //console.log(error, status);
+                }
+            });
+        };
+        //Action link
+        $('.btnAction').on('click', function (e) {
+            e.preventDefault();
+            ActionLink({ url: $(this).attr('data-url'), data: { dataId: $(this).attr('dataId') } });
+        });
+    </script>
+}
