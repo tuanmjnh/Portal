@@ -31,7 +31,7 @@ namespace Portal.Areas.Cuoc.Controllers
             {
                 SQLServer = new TM.Connection.SQLServer("SQLTTKDServerCuoc");
                 //
-                qry = "SELECT * FROM DB_THANHTOAN_BKN WHERE MA_TT_HNI IS NOT NULL";
+                qry = "SELECT * FROM DB_THANHTOAN_BKN WHERE MA_TT IS NOT NULL";
                 if (Authentication.Auth.AuthUser.roles == Authentication.Roles.staff)
                 {
                     var staff_id = Authentication.Auth.AuthUser.staff_id;
@@ -44,7 +44,7 @@ namespace Portal.Areas.Cuoc.Controllers
 
                 //Get data for Search
                 if (!string.IsNullOrEmpty(obj.search))
-                    cdt = $"(MA_KH LIKE '%{obj.search}%' OR MA_TT_HNI LIKE '%{obj.search}%' OR ACCOUNT LIKE '%{obj.search}%' OR MA_TB LIKE '%{obj.search}%' OR TEN_TT LIKE '%{obj.search}%' OR DIACHI_TT LIKE '%{obj.search}%') AND ";
+                    cdt = $"(MA_KH LIKE '%{obj.search}%' OR MA_TT LIKE '%{obj.search}%' OR MA_TB LIKE '%{obj.search}%' OR MA_TB LIKE '%{obj.search}%' OR TEN_TT LIKE '%{obj.search}%' OR DIACHI_TT LIKE '%{obj.search}%') AND ";
                 if (!string.IsNullOrEmpty(cdt))
                     qry += $" AND {cdt.Substring(0, cdt.Length - 5)}";
 
@@ -54,8 +54,8 @@ namespace Portal.Areas.Cuoc.Controllers
                 //if (!string.IsNullOrEmpty(obj.search))
                 //    data = data.Where(d =>
                 //    d.MA_KH.Contains(obj.search) ||
-                //    d.MA_TT_HNI.Contains(obj.search) ||
-                //    d.ACCOUNT.Contains(obj.search) ||
+                //    d.MA_TT.Contains(obj.search) ||
+                //    d.MA_TB.Contains(obj.search) ||
                 //    d.MA_TB.Contains(obj.search) ||
                 //    d.TEN_TT.Contains(obj.search) ||
                 //    d.DIACHI_TT.Contains(obj.search));
@@ -71,14 +71,14 @@ namespace Portal.Areas.Cuoc.Controllers
                         data = data.OrderBy(m => m.MA_KH);
                     else if (obj.sort.ToUpper() == "MA_KH" && obj.order.ToLower() == "desc")
                         data = data.OrderByDescending(m => m.MA_KH);
-                    else if (obj.sort.ToUpper() == "MA_TT_HNI" && obj.order.ToLower() == "asc")
-                        data = data.OrderBy(m => m.MA_TT_HNI);
-                    else if (obj.sort.ToUpper() == "MA_TT_HNI" && obj.order.ToLower() == "desc")
-                        data = data.OrderByDescending(m => m.MA_TT_HNI);
-                    else if (obj.sort.ToUpper() == "ACCOUNT" && obj.order.ToLower() == "asc")
-                        data = data.OrderBy(m => m.ACCOUNT);
-                    else if (obj.sort.ToUpper() == "ACCOUNT" && obj.order.ToLower() == "desc")
-                        data = data.OrderByDescending(m => m.ACCOUNT);
+                    else if (obj.sort.ToUpper() == "MA_TT" && obj.order.ToLower() == "asc")
+                        data = data.OrderBy(m => m.MA_TT);
+                    else if (obj.sort.ToUpper() == "MA_TT" && obj.order.ToLower() == "desc")
+                        data = data.OrderByDescending(m => m.MA_TT);
+                    else if (obj.sort.ToUpper() == "MA_TB" && obj.order.ToLower() == "asc")
+                        data = data.OrderBy(m => m.MA_TB);
+                    else if (obj.sort.ToUpper() == "MA_TB" && obj.order.ToLower() == "desc")
+                        data = data.OrderByDescending(m => m.MA_TB);
                     else if (obj.sort.ToUpper() == "MA_TB" && obj.order.ToLower() == "asc")
                         data = data.OrderBy(m => m.MA_TB);
                     else if (obj.sort.ToUpper() == "MA_TB" && obj.order.ToLower() == "desc")
@@ -92,10 +92,10 @@ namespace Portal.Areas.Cuoc.Controllers
                     else if (obj.sort.ToUpper() == "DIACHI_TT" && obj.order.ToLower() == "desc")
                         data = data.OrderByDescending(m => m.DIACHI_TT);
                     else
-                        data = data.OrderBy(m => m.MA_TT_HNI);
+                        data = data.OrderBy(m => m.MA_TT);
                 }
                 else
-                    data = data.OrderBy(m => m.MA_TT_HNI);
+                    data = data.OrderBy(m => m.MA_TT);
                 //Page Site
                 var rs = data.Skip(obj.offset).Take(obj.limit).ToList();
                 return Json(new { total = total, rows = rs }, JsonRequestBehavior.AllowGet);
@@ -110,7 +110,7 @@ namespace Portal.Areas.Cuoc.Controllers
             return View();
         }
         [HttpPost, ValidateAntiForgeryToken]
-        public JsonResult GetBillDetails(Guid id, string TimeBill)
+        public JsonResult GetBillDetails(Guid id, int kyhoadon)
         {
             var index = 0;
             try
@@ -119,36 +119,36 @@ namespace Portal.Areas.Cuoc.Controllers
                 //var TIME_BILL = new
                 SQLServer = new TM.Connection.SQLServer("SQLTTKDServerCuoc");
                 var qry = $"SELECT * FROM DB_THANHTOAN_BKN WHERE ID='{id}'";
-                var accounts = "";
+                var matbs = "";
                 var dbkh = SQLServer.Connection.QueryFirstOrDefault<Billing.Models.DB_THANHTOAN_BKN>(qry);
                 if (dbkh == null)
                     return Json(new { danger = "Không tìm thấy khách hàng!" }, JsonRequestBehavior.AllowGet);
                 //HD CD
-                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_CD b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=1 AND a.MA_TT_HNI='{dbkh.MA_TT_HNI}' AND FORMAT(b.TIME_BILL,'MM/yyyy')='{TimeBill}'";
+                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_CD b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=1 AND a.MA_TT='{dbkh.MA_TT}' AND KYHOADON={kyhoadon}";
                 var hdcd = SQLServer.Connection.Query<Billing.Models.HD_CD>(qry).ToList();
-                if (hdcd.Count > 0) foreach (var i in hdcd) accounts += $"'{i.SO_TB}',";
+                if (hdcd.Count > 0) foreach (var i in hdcd) matbs += $"'{i.SO_TB}',";
                 //HD DD
-                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_DD b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=2 AND a.MA_TT_HNI='{dbkh.MA_TT_HNI}' AND FORMAT(b.TIME_BILL,'MM/yyyy')='{TimeBill}'";
+                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_DD b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=2 AND a.MA_TT='{dbkh.MA_TT}' AND KYHOADON={kyhoadon}";
                 var hddd = SQLServer.Connection.Query<Billing.Models.HD_DD>(qry).ToList();
-                if (hddd.Count > 0) foreach (var i in hddd) accounts += $"'{i.SO_TB}',";
+                if (hddd.Count > 0) foreach (var i in hddd) matbs += $"'{i.SO_TB}',";
                 //HD MYTV
-                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_MYTV b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=8 AND a.MA_TT_HNI='{dbkh.MA_TT_HNI}' AND FORMAT(b.TIME_BILL,'MM/yyyy')='{TimeBill}'";
+                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_MYTV b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=8 AND a.MA_TT='{dbkh.MA_TT}' AND KYHOADON={kyhoadon}";
                 var hdtv = SQLServer.Connection.Query<Billing.Models.HD_MYTV>(qry).ToList();
-                if (hdtv.Count > 0) foreach (var i in hdtv) accounts += $"'{i.ACCOUNT}',";
+                if (hdtv.Count > 0) foreach (var i in hdtv) matbs += $"'{i.MA_TB}',";
                 //HD NET
-                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_NET b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=9005 AND a.MA_TT_HNI='{dbkh.MA_TT_HNI}' AND FORMAT(b.TIME_BILL,'MM/yyyy')='{TimeBill}'";
+                qry = $"SELECT b.* FROM DB_THANHTOAN_BKN a,HD_NET b WHERE a.ID=b.DBKH_ID AND b.TYPE_BILL=9005 AND a.MA_TT='{dbkh.MA_TT}' AND KYHOADON={kyhoadon}";
                 var hdnet = SQLServer.Connection.Query<Billing.Models.HD_NET>(qry).ToList();
-                if (hdnet.Count > 0) foreach (var i in hdnet) accounts += $"'{i.ACCOUNT}',";
+                if (hdnet.Count > 0) foreach (var i in hdnet) matbs += $"'{i.MA_TB}',";
                 //Discount
                 var discount = new List<Billing.Models.DISCOUNT>();
-                if (!string.IsNullOrEmpty(accounts))
+                if (!string.IsNullOrEmpty(matbs))
                 {
-                    qry = $"SELECT * FROM DISCOUNT WHERE ACCOUNT IN({accounts.Trim(',')}) AND FORMAT(TIME_BILL,'MM/yyyy')='{TimeBill}'";
+                    qry = $"SELECT * FROM DISCOUNT WHERE MA_TB IN({matbs.Trim(',')}) AND KYHOADON={kyhoadon}";
                     discount = SQLServer.Connection.Query<Billing.Models.DISCOUNT>(qry).ToList();
                 }
                 //Comment
                 SQLServer = new TM.Connection.SQLServer();
-                qry = $"SELECT * FROM COMMENT_BILL WHERE MA_TT_HNI='{dbkh.MA_TT_HNI}' AND FORMAT(TIME_BILL,'MM/yyyy')='{TimeBill}' ORDER BY CREATEDAT,LEVELS";
+                qry = $"SELECT * FROM COMMENT_BILL WHERE MA_TT='{dbkh.MA_TT}' AND KYHOADON={kyhoadon} ORDER BY CREATEDAT,LEVELS";
                 var cmt = SQLServer.Connection.Query<Billing.Models.COMMENT_BILL>(qry).ToList();
                 return Json(new { data = new { dbkh = dbkh, hdcd = hdcd, hddd = hddd, hdtv = hdtv, hdnet = hdnet, discount = discount, cmt = cmt }, success = "Lấy dữ liệu thành công!" }, JsonRequestBehavior.AllowGet);
             }
@@ -156,7 +156,7 @@ namespace Portal.Areas.Cuoc.Controllers
             finally { SQLServer.Close(); }
         }
         [HttpPost, ValidateAntiForgeryToken]
-        public JsonResult PostComment(Guid? Parent, Guid id, string MATT, string TimeBill, string Contents)
+        public JsonResult PostComment(Guid? Parent, Guid id, string MATT, int kyhoadon, string Contents)
         {
             var index = 0;
             try
@@ -167,8 +167,9 @@ namespace Portal.Areas.Cuoc.Controllers
                 var data = new List<Billing.Models.COMMENT_BILL>();
                 var cmt = new Billing.Models.COMMENT_BILL();
                 cmt.ID = Guid.NewGuid();
-                cmt.TIME_BILL = DateTime.ParseExact($"01/{TimeBill}", "dd/MM/yyyy", provider);
-                cmt.MA_TT_HNI = MATT;
+                cmt.KYHOADON = kyhoadon;
+                // cmt.TIME_BILL = DateTime.ParseExact($"01/{TimeBill}", "dd/MM/yyyy", provider);
+                cmt.MA_TT = MATT;
                 cmt.CONTENTS = Contents;
                 cmt.CREATEDBY = Authentication.Auth.AuthUser.username;
                 cmt.CREATEDAT = DateTime.Now;
@@ -191,8 +192,8 @@ namespace Portal.Areas.Cuoc.Controllers
                 //
                 var extras = new EXTRAS();
                 extras.MA_TT_ID = id.ToString();
-                extras.MA_TT = cmt.MA_TT_HNI;
-                extras.TIME_BILL = cmt.TIME_BILL;
+                extras.MA_TT = cmt.MA_TT;
+                extras.KYHOADON = cmt.KYHOADON;
                 extras.URL = "CUOC/Report";
                 //
                 if (Authentication.Auth.AuthUser.roles == Authentication.Roles.admin || Authentication.Auth.AuthUser.roles == Authentication.Roles.managerBill)
@@ -202,12 +203,12 @@ namespace Portal.Areas.Cuoc.Controllers
                         var ntfc = new Billing.Models.NOTIFICATION();
                         ntfc.ID = Guid.NewGuid();
                         //ntfc.ROOT_ID = cmt.ID.ToString();
-                        //ntfc.PARENT_ID = cmt.MA_TT_HNI;
+                        //ntfc.PARENT_ID = cmt.MA_TT;
                         //ntfc.URL = "CUOC/Report";
                         ntfc.SOURCE = ntfc.CREATEDBY = cmt.CREATEDBY;
                         ntfc.DESTINATION = tmp.CREATEDBY;
                         ntfc.TITLE = "Yêu cầu đối xoát cước";
-                        ntfc.DESC = $"Mã thanh toán: {cmt.MA_TT_HNI} - Kỳ cước: {TimeBill}";
+                        ntfc.DESC = $"Mã thanh toán: {cmt.MA_TT} - Kỳ cước: {kyhoadon}";
                         ntfc.CREATEDAT = cmt.CREATEDAT;
                         ntfc.EXTRAS = Newtonsoft.Json.JsonConvert.SerializeObject(extras);
                         ntfc.FLAG = 1;
@@ -224,12 +225,12 @@ namespace Portal.Areas.Cuoc.Controllers
                         var ntfc = new Billing.Models.NOTIFICATION();
                         ntfc.ID = Guid.NewGuid();
                         //ntfc.ROOT_ID = cmt.ID.ToString();
-                        //ntfc.PARENT_ID = cmt.MA_TT_HNI;
+                        //ntfc.PARENT_ID = cmt.MA_TT;
                         //ntfc.URL = "CUOC/Report";
                         ntfc.SOURCE = ntfc.CREATEDBY = cmt.CREATEDBY;
                         ntfc.DESTINATION = i.username;
                         ntfc.TITLE = "Yêu cầu đối xoát cước";
-                        ntfc.DESC = $"Mã thanh toán: {cmt.MA_TT_HNI} - Kỳ cước: {TimeBill}";
+                        ntfc.DESC = $"Mã thanh toán: {cmt.MA_TT} - Kỳ cước: {kyhoadon}";
                         ntfc.CREATEDAT = cmt.CREATEDAT;
                         ntfc.EXTRAS = Newtonsoft.Json.JsonConvert.SerializeObject(extras);
                         ntfc.FLAG = 1;
@@ -287,6 +288,6 @@ namespace Portal.Areas.Cuoc.Controllers
         public string MA_TT_ID { get; set; }
         public string MA_TT { get; set; }
         public string URL { get; set; }
-        public DateTime TIME_BILL { get; set; }
+        public int KYHOADON { get; set; }
     }
 }

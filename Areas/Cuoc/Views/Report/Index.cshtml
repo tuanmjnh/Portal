@@ -35,8 +35,8 @@
         <tr>
             <th data-events="chkEvents" data-field="state" data-checkbox="true" data-valign="middle">#</th>
             @*<th data-field="MA_KH" data-sortable="true" data-editable="true" data-valign="middle">MA_KH</th>*@
-            <th data-events="cmdEvents" data-formatter="viewBillFomatter_MA_TT_HNI" data-field="MA_TT_HNI" data-sortable="true" data-editable="true" data-valign="middle">Mã thanh toán</th>
-            @*<th data-field="ACCOUNT" data-sortable="true" data-editable="true" data-valign="middle">ACCOUNT</th>*@
+            <th data-events="cmdEvents" data-formatter="viewBillFomatter_MA_TT" data-field="MA_TT" data-sortable="true" data-editable="true" data-valign="middle">Mã thanh toán</th>
+            @*<th data-field="MA_TB" data-sortable="true" data-editable="true" data-valign="middle">MA_TB</th>*@
             @*<th data-field="MA_TB" data-sortable="true" data-editable="true" data-valign="middle">MA_TB</th>*@
             <th data-field="TEN_TT" data-sortable="true" data-editable="true" data-valign="middle">Tên thanh toán</th>
             <th data-field="DIACHI_TT" data-sortable="true" data-editable="true" data-valign="middle">Địa chỉ thanh toán</th>
@@ -95,6 +95,9 @@
     <script src="~/Plugin/bootstrap-table/extensions/export/tableExport.js"></script>
     <script src="~/Scripts/PartialList.js"></script>
     <script>
+        //$(function () {
+        //    console.log(moment($('#TimeBill').val() + '/01', 'MM/YYYY/DD').format('YYYYMMDD'))
+        //});
         AjaxLoaddingBounce();
         var dateNow = moment().subtract(1, 'months');
         var dtpicker = $('.date').datetimepicker({
@@ -105,7 +108,7 @@
         });
         var token = { '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() };
         //
-        function viewBillFomatter_MA_TT_HNI(value, row, index) {
+        function viewBillFomatter_MA_TT(value, row, index) {
             return '<a href="javascript:;" class="viewBill">' + value + '</a>';
         };
         function viewBillFomatter(value, row, index) {
@@ -202,11 +205,11 @@
                     var cmt = d.data.cmt;
                     //dbkh
                     $('#dbkhid').val(dbkh.ID);
-                    $('#MATT').val(dbkh.MA_TT_HNI);
+                    $('#MATT').val(dbkh.MA_TT);
                     var html =
                         '<table class="table table-no-bordered table-responsive">\
                                 <tr><th>Mã khách hàng</th><td>' + dbkh.MA_KH + '</td></tr>\
-                                <tr><th>Mã thanh toán</th><td>' + dbkh.MA_TT_HNI + '</td></tr>\
+                                <tr><th>Mã thanh toán</th><td>' + dbkh.MA_TT + '</td></tr>\
                                 <tr><th>Tên thanh toán</th><td>' + dbkh.TEN_TT + '</td></tr>\
                                 <tr><th>Địa chỉ thanh toán</th><td>' + dbkh.DIACHI_TT + '</td></tr>\
                                 <tr><th>Điện thoại</th><td>' + checkNull(dbkh.DIENTHOAI) + '</td></tr>\
@@ -246,10 +249,10 @@
                     //hdtv
                     if (hdtv.length > 0) {
                         html = '<label class="text-info">Cước MyTV</label><table class="table table-bordered table-responsive">\
-                            <tr><th>ACCOUNT</th><th>Tổng TTT</th><th>Tổng ĐC</th><th>PayTV</th><th>Cước</th><th>Tổng</th><th>VAT</th><th>Tổng cộng</th></tr>';
+                            <tr><th>MA_TB</th><th>Tổng TTT</th><th>Tổng ĐC</th><th>PayTV</th><th>Cước</th><th>Tổng</th><th>VAT</th><th>Tổng cộng</th></tr>';
                         for (var i = 0; i < hdtv.length; i++) {
                             html += '<tr>\
-                                    <td>' + hdtv[i].ACCOUNT + '</td>\
+                                    <td>' + hdtv[i].MA_TB + '</td>\
                                     <td>' + hdtv[i].TONG_TTT.format() + '</td>\
                                     <td>' + hdtv[i].TONG_DC.format() + '</td>\
                                     <td>' + hdtv[i].PAYTV_FEE.format() + '</td>\
@@ -264,10 +267,10 @@
                     //hdnet
                     if (hdnet.length > 0) {
                         html = '<label class="text-info">Cước Internet</label><table class="table table-bordered table-responsive">\
-                            <tr><th>ACCOUNT</th><th>Mã MEN</th><th>Tổng TTT</th><th>Tổng ĐC</th><th>Tổng in</th><th>Tổng</th><th>VAT</th><th>Tổng cộng</th></tr>';
+                            <tr><th>MA_TB</th><th>Mã MEN</th><th>Tổng TTT</th><th>Tổng ĐC</th><th>Tổng in</th><th>Tổng</th><th>VAT</th><th>Tổng cộng</th></tr>';
                         for (var i = 0; i < hdnet.length; i++) {
                             html += '<tr>\
-                                    <td>' + hdnet[i].ACCOUNT + '</td>\
+                                    <td>' + hdnet[i].MA_TB + '</td>\
                                     <td>' + hdnet[i].MA_TB + '</td>\
                                     <td>' + hdnet[i].TONG_TTT.format() + '</td>\
                                     <td>' + hdnet[i].TONG_DC.format() + '</td>\
@@ -282,10 +285,10 @@
                     //discount
                     if (discount.length > 0) {
                         html = '<label class="text-info">Danh sách khuyến mại - giảm giá</label><table class="table table-bordered table-responsive">\
-                            <tr><th>ACCOUNT</th><th>Giá trị</th><th>Tháng bắt đầu</th><th>Tháng kết thúc</th><th>Ghi chú</th></tr>';
+                            <tr><th>MA_TB</th><th>Giá trị</th><th>Tháng bắt đầu</th><th>Tháng kết thúc</th><th>Ghi chú</th></tr>';
                         for (var i = 0; i < discount.length; i++) {
                             html += '<tr>\
-                                    <td>' + discount[i].ACCOUNT + '</td>\
+                                    <td>' + discount[i].MA_TB + '</td>\
                                     <td>' + discount[i].VALUE.format() + checkValueDiscount(discount[i].TYPEID) + '</td>\
                                     <td>' + moment(discount[i].NGAY_BD).format('MM/YYYY') + '</td>\
                                     <td>' + (discount[i].NGAY_KT === null ? '' : moment(discount[i].NGAY_KT).format('MM/YYYY')) + '</td>\
@@ -318,12 +321,12 @@
         window.cmdEvents = {
             'click .viewBill': function (e, value, row, index) {
                 $('#BillDetails').modal('show');
-                var data = $.extend({}, token, { id: row.ID, TimeBill: $('#TimeBill').val() });
+                var data = $.extend({}, token, { id: row.ID, kyhoadon: moment($('#TimeBill').val() + '/01', 'MM/YYYY/DD').format('YYYYMMDD') });
                 GetBillDetails(data);
             }
         };
         $('.date').on('dp.change', function (e) {
-            var data = $.extend({}, token, { id: $('#dbkhid').val(), TimeBill: $('#TimeBill').val() });
+            var data = $.extend({}, token, { id: $('#dbkhid').val(), kyhoadon: moment($('#TimeBill').val() + '/01', 'MM/YYYY/DD').format('YYYYMMDD') });
             GetBillDetails(data);
         });
         $(document).on('click', '.btnReply', function () {
@@ -356,7 +359,7 @@
                 txtDSC.val('').focus();
                 return;
             }
-            var data = $.extend({}, token, { Parent: mParent.attr('data-id'), id: $('#dbkhid').val(), MATT: $('#MATT').val(), TimeBill: $('#TimeBill').val(), Contents: content });
+            var data = $.extend({}, token, { Parent: mParent.attr('data-id'), id: $('#dbkhid').val(), MATT: $('#MATT').val(), kyhoadon: moment($('#TimeBill').val() + '/01', 'MM/YYYY/DD').format('YYYYMMDD'), Contents: content });
             $.post('@Url.Action("PostComment")', data, function (d) {
                 if (d.data) {
                     if (parent.hasClass('formReply')) {
@@ -390,7 +393,7 @@
                 d.date(moment('01/' + QueryString['time'], 'DD/MM/YYYY'));
 
                 $('#BillDetails').modal('show');
-                var data = $.extend({}, token, { id: QueryString['id'], timebill: $('#TimeBill').val() });
+                var data = $.extend({}, token, { id: QueryString['id'], kyhoadon: moment($('#TimeBill').val() + '/01', 'MM/YYYY/DD').format('YYYYMMDD') });
                 GetBillDetails(data);
                 checkAjaxNotification = false;
             }
@@ -408,7 +411,7 @@
                         txtDSC.val('').focus();
                         return;
                     }
-                    var data = $.extend({}, token, { Parent: parent.attr('data-id'), MATT: $('#MATT').val(), TimeBill: $('#TimeBill').val(), Contents: content });
+                    var data = $.extend({}, token, { Parent: parent.attr('data-id'), MATT: $('#MATT').val(), kyhoadon: $('#TimeBill').val(), Contents: content });
                     $.post('@Url.Action("PostComment")', data, function (d) {
                         if (d.success) {
                             AddComment(d.data);
